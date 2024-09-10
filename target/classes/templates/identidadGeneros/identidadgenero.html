@@ -31,6 +31,7 @@
 								<tr>
 									<th class="text-center">Nombre</th>
 									<th class="text-center">Descripción</th>
+									<th class="text-center">Código país</th>
 									<th class="text-center">Acciones</th>
 								</tr>
 								</thead>
@@ -38,6 +39,7 @@
 								<tr th:each="identidadgenero,iterStat: ${identidadesGenero}">
 									<td th:text="${identidadgenero.nombre}"></td>
 									<td th:text="${identidadgenero.descripcion}"></td>
+									<td th:text="${identidadgenero.codigoPais}"></td>
 									<td class="text-center align-middle h-50"><a
 											class="btn btnMaterial btn-flat success" role="button"
 											th:href="@{/identidadgenero/edit/{id}(id=${identidadgenero.Id})}"><i

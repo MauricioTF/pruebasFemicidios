@@ -152,12 +152,13 @@ public class IdentidadGeneroController {
 	@PostMapping("/identidadgenero")
 	public String saveIdentidadGenero(@ModelAttribute("identidadgenero") IdentidadGenero identidadgenero) {
 		identidadGeneroService.saveIdentidadGenero(identidadgenero);
-		String descripcion = "Guado una identidad de genero";
+		String descripcion = "Guardo una identidad de genero";
 		Bitacora bitacora = new Bitacora(this.usuario.getCI_Id(), this.usuario.getCVNombre(),this.perfil.getCVRol() ,
 				descripcion);
 		bitacoraService.saveBitacora(bitacora);
 		return "redirect:/identidadgenero";
 	}
+	
 	@GetMapping("/identidadgenero/edit/{id}")
 	public String editIdentidadGenero(@PathVariable Integer id, Model model) {
 		try {
@@ -183,6 +184,7 @@ public class IdentidadGeneroController {
 		existingIdentidadGenero.setId(id);
 		existingIdentidadGenero.setNombre(identidadgenero.getNombre());
 		existingIdentidadGenero.setDescripcion(identidadgenero.getDescripcion());
+		existingIdentidadGenero.setCodigoPais(identidadgenero.getCodigoPais());
 		identidadGeneroService.updateIdentidadGenero(identidadgenero);
 		String descripcion = "Actualizo una identidad de genero";
 		Bitacora bitacora = new Bitacora(this.usuario.getCI_Id(), this.usuario.getCVNombre(),this.perfil.getCVRol() ,
