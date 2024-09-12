@@ -67,4 +67,8 @@ public interface HechoService {
     Hecho getHechoByCDFecha(String CDFecha);
 
 
+
+
+
+
 }

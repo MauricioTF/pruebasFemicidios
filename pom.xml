@@ -20,6 +20,13 @@
     <maven.compiler.target>17</maven.compiler.target>
 	</properties>
 
+<repositories>
+    <repository>
+        <id>itext</id>
+        <url>https://repo.itextsupport.com/releases</url>
+    </repository>
+</repositories>
+
 	<dependencies>
 
 		<dependency>
@@ -49,6 +56,19 @@
 			<optional>true</optional>
 		</dependency>
 		
+		<!-- Para generar los pdf -->
+<dependency>
+    <groupId>com.itextpdf</groupId>
+    <artifactId>layout</artifactId>
+    <version>7.1.15</version>
+</dependency>
+
+<dependency>
+    <groupId>com.itextpdf</groupId>
+    <artifactId>kernel</artifactId>
+    <version>7.1.15</version>
+</dependency>
+
 		<!--
 		<dependency>
 			<groupId>com.mysql</groupId>

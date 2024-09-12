@@ -5,10 +5,16 @@ import com.if7100.entity.Hecho;
 import com.if7100.entity.Perfil;
 import com.if7100.entity.Usuario;
 import com.if7100.entity.Bitacora;
-import com.if7100.service.BitacoraService;
-
 import com.if7100.repository.UsuarioRepository;
 import com.if7100.service.*;
+import com.itextpdf.io.IOException;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,9 +28,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 import java.util.stream.IntStream;
+
+import java.util.stream.Collectors;
 
 @Controller
 public class HechoController {
@@ -75,6 +85,46 @@ public class HechoController {
         this.bitacoraService= bitacoraService;
     }
     
+
+    //Para generar pdf
+    @GetMapping("/hechos/pdf")
+public void exportToPDF(HttpServletResponse response) throws IOException, java.io.IOException {
+    response.setContentType("application/pdf");
+    String headerKey = "Content-Disposition";
+    String headerValue = "attachment; filename=hechos.pdf";
+    response.setHeader(headerKey, headerValue);
+
+    // Crear el documento PDF usando iText 7
+    PdfWriter pdfWriter = new PdfWriter(response.getOutputStream());
+    PdfDocument pdfDoc = new PdfDocument(pdfWriter);
+    Document document = new Document(pdfDoc);
+
+    // Agregar título o encabezado al documento
+    document.add(new Paragraph("Lista de Hechos"));
+
+    // Obtener la lista de hechos
+    List<Hecho> hechos = hechoService.getAllHechos();
+
+    // Recorrer los hechos y agregar la información al documento
+    for (Hecho hecho : hechos) {
+        document.add(new Paragraph("ID: " + hecho.getCI_Id()));
+        document.add(new Paragraph("Tipo de Víctima: " + hecho.getCITipoVictima()));
+        document.add(new Paragraph("País: " + hecho.getCIPais()));
+        document.add(new Paragraph("Provincia: " + hecho.getCVProvincia()));
+        document.add(new Paragraph("Canton: " + hecho.getCVCanton()));
+        document.add(new Paragraph("Distrito: " + hecho.getCVDistrito()));
+        document.add(new Paragraph("Fecha: " + hecho.getCDFecha()));
+        document.add(new Paragraph("Observaciones: " + hecho.getCVDetalles()));
+        document.add(new Paragraph("--------------------------------------------------"));
+    }
+
+    // Cerrar el documento
+    document.close();
+}
+
+
+
+
     private void validarPerfil() {
      	
 		try {
@@ -264,4 +314,13 @@ public class HechoController {
             return editHechoForm(id, model);
         }
     }
+
+
+
+
+
+
+
+    
+
 }
