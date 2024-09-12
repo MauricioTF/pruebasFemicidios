@@ -23,7 +23,6 @@ com\if7100\entity\TipoLugar.class
 com\if7100\service\impl\HechoServiceImpl.class
 com\if7100\service\impl\TipoVictimaServiceImpl.class
 com\if7100\service\TipoVictimaService.class
-com\if7100\service\impl\PaisesServiceImpl.class
 com\if7100\repository\ImputadoRepository.class
 com\if7100\service\VictimaService.class
 com\if7100\entity\IdentidadGenero.class
@@ -68,7 +67,6 @@ com\if7100\service\HechoService.class
 com\if7100\controller\NivelEducativoController.class
 com\if7100\repository\TipoOrganismoRepository.class
 com\if7100\usuarios\seguridad\SecurityUser.class
-com\if7100\controller\IdentidadGeneroController.class
 com\if7100\service\impl\HechoOrganismoServiceImpl.class
 com\if7100\controller\VictimaController.class
 com\if7100\entity\SituacionJuridica.class

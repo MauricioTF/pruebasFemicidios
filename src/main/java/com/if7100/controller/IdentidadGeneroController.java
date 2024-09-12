@@ -9,8 +9,10 @@ package com.if7100.controller;
 import com.if7100.entity.Bitacora;
 import com.if7100.entity.Usuario;
 import com.if7100.entity.Paises;
+import com.if7100.entity.PaisesidentIdadesgeneros;
 import com.if7100.service.BitacoraService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,8 +26,8 @@ import com.if7100.entity.Hecho;
 import com.if7100.entity.IdentidadGenero;
 import com.if7100.entity.Perfil;
 import com.if7100.service.IdentidadGeneroService;
-
-
+import com.if7100.service.PaisesService;
+import com.if7100.service.PaisesidentIdadesgenerosService;
 import com.if7100.service.PerfilService;
 
 import org.springframework.ui.Model;
@@ -34,6 +36,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -56,8 +59,11 @@ public class IdentidadGeneroController {
 	// instancias para control de bitacora
 	private BitacoraService bitacoraService;
 	private Usuario usuario;
-	
 
+	@Autowired
+    private PaisesidentIdadesgenerosService paisesIdentidadGeneroService; // Servicio para manejar la relación
+    @Autowired
+    private PaisesService paisesService;  // Servicio para manejar los países
 
 	public IdentidadGeneroController(BitacoraService bitacoraService, IdentidadGeneroService identidadGeneroService,
 			PerfilService perfilService, UsuarioRepository usuarioRepository
@@ -136,9 +142,10 @@ public class IdentidadGeneroController {
 			this.validarPerfil();
 			if (!this.perfil.getCVRol().equals("Consulta")) {
 				IdentidadGenero identidadgenero = new IdentidadGenero();
-				Paises paises = new Paises();
+				List<Paises> listaPaises = paisesService.getAllPaises();
 				model.addAttribute("identidadgenero", identidadgenero);
-				
+				model.addAttribute("listaPaises", listaPaises);
+
 				return "identidadGeneros/crear_identidad";
 			} else {
 				return "SinAcceso";
@@ -150,8 +157,21 @@ public class IdentidadGeneroController {
 	}
 
 	@PostMapping("/identidadgenero")
-	public String saveIdentidadGenero(@ModelAttribute("identidadgenero") IdentidadGenero identidadgenero) {
+	public String saveIdentidadGenero(@ModelAttribute("identidadgenero") IdentidadGenero identidadgenero, @RequestParam List<String> paisesSeleccionados) {
+
+
 		identidadGeneroService.saveIdentidadGenero(identidadgenero);
+
+		        // Guardar la relación entre identidad de género y países seleccionados
+				for (String iso2 : paisesSeleccionados) {
+					Paises pais = paisesService.getPaisByISO2(iso2);  // Obtener el país por ISO2
+					if (pais != null) {
+						PaisesidentIdadesgeneros relacion = new PaisesidentIdadesgeneros();
+						relacion.setIdentidadGenero(identidadgenero);
+						relacion.setPais(pais);
+						paisesIdentidadGeneroService.save(relacion);
+					}
+				}
 		String descripcion = "Guardo una identidad de genero";
 		Bitacora bitacora = new Bitacora(this.usuario.getCI_Id(), this.usuario.getCVNombre(),this.perfil.getCVRol() ,
 				descripcion);
@@ -184,7 +204,7 @@ public class IdentidadGeneroController {
 		existingIdentidadGenero.setId(id);
 		existingIdentidadGenero.setNombre(identidadgenero.getNombre());
 		existingIdentidadGenero.setDescripcion(identidadgenero.getDescripcion());
-		existingIdentidadGenero.setCodigoPais(identidadgenero.getCodigoPais());
+		//existingIdentidadGenero.setCodigoPais(identidadgenero.getCodigoPais());
 		identidadGeneroService.updateIdentidadGenero(identidadgenero);
 		String descripcion = "Actualizo una identidad de genero";
 		Bitacora bitacora = new Bitacora(this.usuario.getCI_Id(), this.usuario.getCVNombre(),this.perfil.getCVRol() ,

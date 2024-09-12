@@ -1,5 +1,7 @@
 package com.if7100.entity;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,19 +19,17 @@ public class IdentidadGenero {
 	private String nombre;
 	@Column(name = "descripcion", nullable = false)
 	private String descripcion;
-	@Column(name = "codigo_pais", nullable = false)
-	private String codigo_pais;
 
 	public IdentidadGenero() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public IdentidadGenero(String nombre,String descripcion, String codigo_pais) {
+	public IdentidadGenero(String nombre,String descripcion) {
 		super();
 		this.nombre=nombre;
 		this.descripcion=descripcion;
-		this.codigo_pais=codigo_pais;
 	}
+	
 	public Integer getId() {
 		return Id;
 	}
@@ -48,14 +48,6 @@ public class IdentidadGenero {
 
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
-	}
-
-	public String getCodigoPais() {
-		return codigo_pais;
-	}
-
-	public void setCodigoPais(String codigo_pais) {
-		this.codigo_pais = codigo_pais;
 	}
 
 	public void setId(Integer id) {
