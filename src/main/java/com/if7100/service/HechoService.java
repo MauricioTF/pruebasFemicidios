@@ -4,6 +4,7 @@ import com.if7100.entity.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface HechoService {
@@ -66,6 +67,7 @@ public interface HechoService {
 
     Hecho getHechoByCDFecha(String CDFecha);
 
+    
 
 
 

@@ -16,6 +16,50 @@
     <main class="page">
         <section class="p-5">
 
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <label for="startDate" class="form-label">Fecha de Inicio</label>
+                    <input type="date" id="startDate" class="form-control" />
+                </div>
+                <div class="col-md-3">
+                    <label for="endDate" class="form-label">Fecha de Fin</label>
+                    <input type="date" id="endDate" class="form-control" />
+                </div>
+                <div class="col-md-3 align-self-end">
+                    <button class="btn btn-primary" id="filterBtn">Filtrar</button>
+                </div>
+            </div>
+
+            
+            <script>
+                $(document).ready(function() {
+                    $('#filterBtn').on('click', function() {
+                        var startDate = $('#startDate').val();
+                        var endDate = $('#endDate').val();
+                        
+                        if (startDate && endDate) {
+                            $.ajax({
+                                url: '/hechos/filter', // La URL de tu controlador para el filtrado
+                                type: 'GET',
+                                data: {
+                                    startDate: startDate,
+                                    endDate: endDate
+                                },
+                                success: function(response) {
+                                    // Reemplaza el contenido de la tabla con la respuesta del servidor
+                                    $('#ipi-table tbody').html(response);
+                                },
+                                error: function() {
+                                    alert('Ocurrió un error al filtrar los hechos.');
+                                }
+                            });
+                        } else {
+                            alert('Por favor selecciona ambas fechas.');
+                        }
+                    });
+                });
+            </script>
+            
 
 
 
