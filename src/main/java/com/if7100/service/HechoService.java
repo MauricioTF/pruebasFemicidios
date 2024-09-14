@@ -47,7 +47,8 @@ public interface HechoService {
 
     void deleteHechoById(Integer Id);
 
-    Hecho getHechoByPais(Integer CVPais);
+    //probando
+    List<Hecho> getHechoByPais(Integer CVPais);
 
     Hecho getHechoByTipoVictima(Integer CITipoVictima);
 
@@ -72,5 +73,8 @@ public interface HechoService {
 
 
 
+    
 
+
+    
 }

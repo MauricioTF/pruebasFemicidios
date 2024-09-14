@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,12 @@ import java.util.stream.Collectors;////////
 public class HechoServiceImpl implements HechoService {
 
     private HechoRepository hechoRepository;
+
+
+     // Formato de fecha que estás utilizando (modificar según tu formato real)
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+
 
     private PaisesRepository paisesRepository;
 
@@ -251,8 +258,9 @@ public class HechoServiceImpl implements HechoService {
         hechoRepository.deleteById(Id);
     }
 
+    //pr
     @Override
-    public Hecho getHechoByPais(Integer CIPais) {
+    public List<Hecho> getHechoByPais(Integer CIPais) {
         return hechoRepository.findByCIPais(CIPais);
     }
 
@@ -312,9 +320,4 @@ public class HechoServiceImpl implements HechoService {
 
 
 
-
-
-
-
-    
 }

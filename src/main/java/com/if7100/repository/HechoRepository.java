@@ -1,13 +1,20 @@
 package com.if7100.repository;
 
 import com.if7100.entity.Hecho;
+
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HechoRepository extends JpaRepository<Hecho, Integer> {
 
-    Hecho findByCIPais(Integer CIPais);
+    //probando
+    List<Hecho> findByCIPais(Integer CIPais);
 
     Hecho findByCITipoVictima(Integer CITipoVictima);
 
@@ -26,5 +33,15 @@ public interface HechoRepository extends JpaRepository<Hecho, Integer> {
     Hecho findByCIIdGenerador(Integer CIIdGenerador);
 
     Hecho findByCDFecha(String CDFecha);
+
+
+
+
+
+
+
+
+
+        
 
 }
