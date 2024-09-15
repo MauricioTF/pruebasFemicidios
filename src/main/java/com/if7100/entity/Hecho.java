@@ -16,7 +16,7 @@ public class Hecho {
     private Integer CI_Id;
 
     @Column(name = "CI_Pais", nullable = false)
-    private Integer CIPais;
+    private String CIPais;
     
 
     @Column(name = "CI_Tipo_Victima", nullable = false)
@@ -62,7 +62,7 @@ public class Hecho {
 
     public Hecho(Integer CI_Id, Integer CITipoVictima, Integer CITipoRelacion, Integer CIModalidad,
                  Integer CIIdVictima, Integer CIIdProceso, String CVAgresionSexual,
-                 String CVDenunciaPrevia, Integer CIIdGenerador, Integer CIPais, String CVProvincia,String CVCanton,
+                 String CVDenunciaPrevia, Integer CIIdGenerador, String CIPais, String CVProvincia,String CVCanton,
                  String CVDistrito, String CDFecha, String CVDetalles) {
         this.CI_Id = CI_Id;
         this.CIPais = CIPais;
@@ -145,11 +145,11 @@ public class Hecho {
         this.CI_Id = CI_Id;
     }
 
-    public Integer getCIPais() {
+    public String getCIPais() {
         return CIPais;
     }
 
-    public void setCIPais(Integer CVPais) {
+    public void setCIPais(String CVPais) {
         this.CIPais = CVPais;
     }
     

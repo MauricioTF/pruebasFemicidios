@@ -19,10 +19,6 @@ public class PaisesServiceImpl implements PaisesService {
         this.paisesRepository = paisesRepository;
     }
 
-	@Override
-    public Paises getPaisByID(int id) {
-        return paisesRepository.findById(id); // Llamada al método del repositorio
-    }
 
 	@Override
 	public Paises getPaisByISO2(String iso2) {
@@ -38,5 +34,12 @@ public class PaisesServiceImpl implements PaisesService {
             e.printStackTrace();
             return null; 
         }
+    }
+
+
+    @Override
+    public Paises getPaisByID(int id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getPaisByID'");
     }
 }

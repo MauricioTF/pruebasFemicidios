@@ -10,7 +10,7 @@ import com.if7100.entity.Paises;
 @Repository
 public interface PaisesRepository extends JpaRepository<Paises,Integer>  {
 
-    Paises findById(int Id);
+    Paises findById(String string);
     Paises findByISO2(String iso2);
 
 }

@@ -329,5 +329,20 @@ public void exportToPDF(HttpServletResponse response) throws IOException, java.i
     
 
 
+    @GetMapping("/hechos/filterByPais")
+    public ResponseEntity<List<Hecho>> filtrarHechosPorPais(@RequestParam String pais) {
+        try {
+            // Convierte el parámetro pais a Integer (si es necesario) o ajusta la lógica
+            List<Hecho> hechosFiltrados = hechoService.findByCIPaisContaining(pais);
+            
+            System.out.println("Filtradooooooooooooos "+hechosFiltrados);
+            return new ResponseEntity<>(hechosFiltrados, HttpStatus.OK);
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
 }

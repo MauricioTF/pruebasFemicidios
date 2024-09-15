@@ -16,12 +16,92 @@
     <main class="page">
         <section class="p-5">
 
+<!-- Campo de búsqueda por país -->
+<input type="text" id="searchInput" placeholder="Buscar por país" class="form-control"/>
 
+<!-- Script para manejar la búsqueda dinámica -->
+<script>
+    $(document).ready(function() {
+        $('#searchInput').on('input', function() {
+            var query = $(this).val();
 
+            if (query.length > 0) {
+                
+                
+                $.ajax({
+                    url: '/hechos/filterByPais',  
+                    
+                    type: 'GET',
+                    data: {
+                        pais: query  
+                    },
+                    success: function(response) {
+                        
+                        var tableBody = $('#ipi-table tbody');
+                        tableBody.empty();  
 
+                        $.each(response, function(index, hecho) {
+                            
+                            var row = '<tr>' +
+                                '<td>' + hecho.CITipoVictima + '</td>' +
+                                '<td>' + hecho.CITipoRelacion + '</td>' +
+                                '<td>' + hecho.CIModalidad + '</td>' +
+                                '<td>' + hecho.CIIdVictima + '</td>' +
+                                '<td>' + hecho.CIIdProceso + '</td>' +
+                                '<td>' + hecho.CIPais + '</td>' +
+                                '<td>' + hecho.CVProvincia + '</td>' +
+                                '<td>' + hecho.CVCanton + '</td>' +
+                                '<td>' + hecho.CVDistrito + '</td>' +
+                                '<td>' + hecho.CVAgresionSexual + '</td>' +
+                                '<td>' + hecho.CVDenunciaPrevia + '</td>' +
+                                '<td>' + hecho.CIIdGenerador + '</td>' +
+                                '<td>' + hecho.CDFecha + '</td>' +
+                                '<td>' + hecho.CVDetalles + '</td>' +
+                                '</tr>';
+                            tableBody.append(row);
+                        });
+                    },
+                    error: function() {
+                        alert('Error al buscar por país.');
+                    }
+                });
+            } else {
+                
+                $.ajax({
+                    url: '/hechos/1',  
+                    type: 'GET',
+                    success: function(response) {
+                        var tableBody = $('#ipi-table tbody');
+                        tableBody.empty(); 
 
-
-
+                        $.each(response, function(index, hecho) {
+                            var row = '<tr>' +
+                                '<td>' + hecho.CITipoVictima + '</td>' +
+                                '<td>' + hecho.CITipoRelacion + '</td>' +
+                                '<td>' + hecho.CIModalidad + '</td>' +
+                                '<td>' + hecho.CIIdVictima + '</td>' +
+                                '<td>' + hecho.CIIdProceso + '</td>' +
+                                '<td>' + hecho.CIPais + '</td>' +
+                                '<td>' + hecho.CVProvincia + '</td>' +
+                                '<td>' + hecho.CVCanton + '</td>' +
+                                '<td>' + hecho.CVDistrito + '</td>' +
+                                '<td>' + hecho.CVAgresionSexual + '</td>' +
+                                '<td>' + hecho.CVDenunciaPrevia + '</td>' +
+                                '<td>' + hecho.CIIdGenerador + '</td>' +
+                                '<td>' + hecho.CDFecha + '</td>' +
+                                '<td>' + hecho.CVDetalles + '</td>' +
+                                '</tr>';
+                            tableBody.append(row);
+                        });
+                    },
+                    error: function() {
+                        alert('Error al cargar todos los hechos.');
+                    }
+                });
+            }
+        });
+    });
+</script>
 
             <div class="container-fluid">
                 <div class="card">
