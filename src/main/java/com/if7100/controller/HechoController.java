@@ -89,7 +89,7 @@ public class HechoController {
         this.usuarioRepository = usuarioRepository;
         this.bitacoraService= bitacoraService;
     }
-    
+
 
     //Para generar pdf
     @GetMapping("/hechos/pdf")

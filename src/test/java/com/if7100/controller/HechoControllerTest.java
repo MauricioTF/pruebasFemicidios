@@ -15,7 +15,7 @@ public class HechoControllerTest {
     @Autowired
     private HechoRepository hechoRepository;
 
-    private Hecho hecho = new Hecho(2, 2, 2, 2, 2, 2, "SI", "SI", 2, 506,"Limon","Limon","Limon", "2023-05-12T01:20"," ");
+    private Hecho hecho = new Hecho(2, 2, 2, 2, 2, 2, "SI", "SI", 2, "506","Limon","Limon","Limon", "2023-05-12T01:20"," ");
     private Hecho consultado = new Hecho();
 
     @Test
@@ -33,7 +33,7 @@ public class HechoControllerTest {
     @Test
     public void testTres() throws Exception{
         consultado=hechoRepository.findByCIIdVictima(2);
-        consultado.setCIPais(505);
+        consultado.setCIPais("505");
         hechoRepository.save(consultado);
         consultado=hechoRepository.findByCIIdVictima(2);
         assertNotEquals(consultado.getCIPais(),506);
