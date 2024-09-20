@@ -41,8 +41,4 @@ public interface HechoRepository extends JpaRepository<Hecho, Integer> {
 
 
 
-
-    List<Hecho> findByCIPaisContaining(String CIPais);
-    
-
 }

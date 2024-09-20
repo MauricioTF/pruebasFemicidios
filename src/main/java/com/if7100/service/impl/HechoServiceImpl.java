@@ -88,7 +88,7 @@ public class HechoServiceImpl implements HechoService {
 
         for (Hecho hecho :
                 hechos) {
-            paises.add(paisesRepository.findById(Integer.parseInt(hecho.getCIPais())).orElse(new Paises()));
+            paises.add(paisesRepository.findById(hecho.getCIPais()).orElse(new Paises()));
         }
         return paises;
     }
@@ -318,9 +318,5 @@ public class HechoServiceImpl implements HechoService {
 
 
 
-    @Override
-    public List<Hecho> findByCIPaisContaining(String CIPais) {
-        return hechoRepository.findByCIPaisContaining(CIPais);
-    }
 
 }

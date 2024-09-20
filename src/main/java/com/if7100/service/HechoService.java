@@ -76,5 +76,4 @@ public interface HechoService {
     
 
 
-    List<Hecho> findByCIPaisContaining(String CIPais);    
 }
