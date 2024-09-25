@@ -79,6 +79,9 @@ public class Victima {
 	@Column(name="CV_Generador", nullable =false)
 	private String CVGenerador;
 	
+	@Column(name = "codigo_pais", nullable = false)
+	private Integer codigoPais;
+
 	public Victima() {
 		
 	}
@@ -88,7 +91,7 @@ public class Victima {
 			int cIEdad, int cVGenero, String cVLugarNac, int cVOrientaSex, String CVNacionalidad, 
 			int CIEducacion, String CVOcupacion, String CVDomicilio, String CVLugarResidencia, 
 			String CVDiscapacidad, String CVCondicionMigratoria, String CVEtnia, String CVMedidasProteccion, 
-			String CVDenunciasPrevias, int CIHijos, String CVGenerador) {
+			String CVDenunciasPrevias, int CIHijos, String CVGenerador,  int codigoPais) {
 		super();
 		
 		CVDNI = cVDNI;
@@ -111,7 +114,7 @@ public class Victima {
 		this.CVDenunciasPrevias = CVDenunciasPrevias;
 		this.CIHijos = CIHijos;
 		this.CVGenerador = CVGenerador;
-		
+		this.codigoPais = codigoPais;
 		
 		
 	}
@@ -398,8 +401,14 @@ public class Victima {
 		CVGenerador = cVGenerador;
 	}
 
-
+		// pais
+		public Integer getCodigoPais() {
+			return this.codigoPais;
+		}
 	
+		public void setCodigoPais(int codigoPais) {
+			this.codigoPais = codigoPais;
+		}
 
 	
 

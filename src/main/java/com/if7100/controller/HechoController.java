@@ -4,6 +4,7 @@ import com.if7100.entity.Hecho;
 
 import com.if7100.entity.Perfil;
 import com.if7100.entity.Usuario;
+import com.if7100.entity.Victima;
 import com.if7100.entity.Bitacora;
 import com.if7100.repository.UsuarioRepository;
 import com.if7100.service.*;
@@ -165,23 +166,41 @@ public void exportToPDF(HttpServletResponse response) throws IOException, java.i
     @GetMapping("/hecho/{pg}")
     public String listHecho(Model model, @PathVariable Integer pg){
 
-        if (pg < 1){
+        /*if (pg < 1){
             return "redirect:/hecho/1";
-        }
+        }*/
 
-        int numeroTotalElementos = hechoService.getAllHechos().size();
+        this.validarPerfil();
+        
+        Integer codigoPaisUsuario = this.usuario.getCodigoPais();
+        List<Hecho> hechosFiltrados = hechoService.getHechosByCodigoPaisVictima(codigoPaisUsuario);
+    
+
+        int numeroTotalElementos = hechosFiltrados.size();
 
         Pageable pageable = initPages(pg, 5, numeroTotalElementos);
 
-        Page<Hecho> hechoPage = hechoService.getAllHechosPage(pageable);
+        int tamanoPagina = pageable.getPageSize();
+        int numeroPagina = pageable.getPageNumber();
 
-        List<Integer> nPaginas = IntStream.rangeClosed(1, hechoPage.getTotalPages())
+        //Page<Hecho> hechoPage = hechoService.getAllHechosPage(pageable);
+
+        List<Hecho> hechosPaginados = hechosFiltrados.stream()
+			.skip((long) numeroPagina * tamanoPagina)
+			.limit(tamanoPagina)
+			.collect(Collectors.toList());
+
+		List<Integer> nPaginas = IntStream.rangeClosed(1, (int) Math.ceil((double) numeroTotalElementos / tamanoPagina))
+			.boxed()
+			.toList();
+
+        /*List<Integer> nPaginas = IntStream.rangeClosed(1, hechoPage.getTotalPages())
                 .boxed()
-                .toList();
+                .toList();*/
 
         model.addAttribute("PaginaActual", pg);
         model.addAttribute("nPaginas", nPaginas);
-        model.addAttribute("hechos", hechoPage.getContent());
+        model.addAttribute("hechos", hechosPaginados);
         model.addAttribute("paises", hechoService.getAllPaisesPage(pageable));
         model.addAttribute("modalidades", hechoService.getAllModalidadesPage(pageable));
         model.addAttribute("organismos", hechoService.getAllOrganismosPage(pageable));
@@ -189,7 +208,7 @@ public void exportToPDF(HttpServletResponse response) throws IOException, java.i
         model.addAttribute("tipoRelaciones", hechoService.getAllTipoRelacionesPage(pageable));
         model.addAttribute("victimas", hechoService.getAllVictimasPage(pageable));
         model.addAttribute("procesosJudiciales", hechoService.getAllProcesosJudicialesPage(pageable));
-        model.addAttribute("hechos", hechoPage.getContent());
+        model.addAttribute("hechos", hechosPaginados);
         return "hechos/hechos";
     }
 
@@ -299,7 +318,7 @@ public void exportToPDF(HttpServletResponse response) throws IOException, java.i
             existingHecho.setCITipoVictima(hecho.getCITipoVictima());
             existingHecho.setCITipoRelacion(hecho.getCITipoRelacion());
             existingHecho.setCIModalidad(hecho.getCIModalidad());
-            existingHecho.setCIIdVictima(hecho.getCIIdVictima());
+            //existingHecho.setCIIdVictima(hecho.getCIIdVictima());
             existingHecho.setCIIdProceso(hecho.getCIIdProceso());
             existingHecho.setCIIdGenerador(hecho.getCIIdGenerador());
             existingHecho.setCVAgresionSexual(hecho.getCVAgresionSexual());

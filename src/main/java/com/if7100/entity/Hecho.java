@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -28,8 +30,8 @@ public class Hecho {
     @Column(name = "CI_Modalidad", nullable = false)
     private Integer CIModalidad;
 
-    @Column(name = "CI_Id_Victima", nullable = false)
-    private Integer CIIdVictima;
+   //@Column(name = "CI_Id_Victima", nullable = false)
+   //private Integer CIIdVictima;
 
     @Column(name = "CI_Id_Proceso", nullable = false)
     private Integer CIIdProceso;
@@ -58,10 +60,20 @@ public class Hecho {
     @Column(name = "CV_Detalles", nullable = false)
     private String CVDetalles;
 
+
+
+
+    @ManyToOne
+    @JoinColumn(name = "CI_Id_Victima", referencedColumnName = "CI_Id", nullable = false)
+    private Victima victima;
+
+
+
+
     public Hecho(){}
 
     public Hecho(Integer CI_Id, Integer CITipoVictima, Integer CITipoRelacion, Integer CIModalidad,
-                 Integer CIIdVictima, Integer CIIdProceso, String CVAgresionSexual,
+                 /*Integer CIIdVictima,*/ Integer CIIdProceso, String CVAgresionSexual,
                  String CVDenunciaPrevia, Integer CIIdGenerador, Integer CIPais, String CVProvincia,String CVCanton,
                  String CVDistrito, String CDFecha, String CVDetalles) {
         this.CI_Id = CI_Id;
@@ -72,7 +84,7 @@ public class Hecho {
         this.CITipoVictima = CITipoVictima;
         this.CITipoRelacion = CITipoRelacion;
         this.CIModalidad = CIModalidad;
-        this.CIIdVictima = CIIdVictima;
+       // this.CIIdVictima = CIIdVictima;
         this.CIIdProceso = CIIdProceso;
         this.CVAgresionSexual = CVAgresionSexual;
         this.CVDenunciaPrevia = CVDenunciaPrevia;
@@ -80,6 +92,21 @@ public class Hecho {
         this.CDFecha = CDFecha;
         this.CVDetalles = CVDetalles;
     }
+
+
+
+
+
+    public Victima getVictima() {
+        return victima;
+    }
+
+    public void setVictima(Victima victima) {
+        this.victima = victima;
+    }
+
+
+
 
     public String getCVDetalles() {
         return CVDetalles;
@@ -121,13 +148,13 @@ public class Hecho {
         this.CIIdGenerador = CIIdGenerador;
     }
 
-    public Integer getCIIdVictima() {
+    /*public Integer getCIIdVictima() {
         return CIIdVictima;
     }
 
     public void setCIIdVictima(Integer CIIdVictima) {
         this.CIIdVictima = CIIdVictima;
-    }
+    }*/
 
     public Integer getCIIdProceso() {
         return CIIdProceso;

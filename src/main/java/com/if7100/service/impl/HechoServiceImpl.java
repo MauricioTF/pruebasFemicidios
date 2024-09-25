@@ -185,7 +185,7 @@ public class HechoServiceImpl implements HechoService {
         return organismos;
     }
 
-    @Override
+    /*@Override
     public List<Victima> getAllVictimas() {
         List<Hecho> hechos = hechoRepository.findAll();
         List<Victima> victimas = new ArrayList<>();
@@ -196,9 +196,25 @@ public class HechoServiceImpl implements HechoService {
         }
 
         return victimas;
-    }
+    } */
 
     @Override
+public List<Victima> getAllVictimas() {
+    List<Hecho> hechos = hechoRepository.findAll();
+    List<Victima> victimas = new ArrayList<>();
+
+    for (Hecho hecho : hechos) {
+        // Añadir directamente la víctima asociada al hecho
+        if (hecho.getVictima() != null) {
+            victimas.add(hecho.getVictima());
+        }
+    }
+
+    return victimas;
+}
+
+
+    /*@Override
     public List<Victima> getAllVictimasPage(Pageable pageable) {
         Page<Hecho> hechos = hechoRepository.findAll(pageable);
         List<Victima> victimas = new ArrayList<>();
@@ -209,7 +225,23 @@ public class HechoServiceImpl implements HechoService {
         }
 
         return victimas;
+    } */
+
+    @Override
+public List<Victima> getAllVictimasPage(Pageable pageable) {
+    Page<Hecho> hechos = hechoRepository.findAll(pageable);
+    List<Victima> victimas = new ArrayList<>();
+
+    for (Hecho hecho : hechos) {
+        // Añadir directamente la víctima asociada al hecho
+        if (hecho.getVictima() != null) {
+            victimas.add(hecho.getVictima());
+        }
     }
+
+    return victimas;
+}
+
 
     @Override
     public List<ProcesoJudicial> getAllProcesosJudiciales() {
@@ -279,11 +311,18 @@ public class HechoServiceImpl implements HechoService {
         return hechoRepository.findByCIModalidad(CIModalidad);
     }
 
-    @Override
-    public Hecho getHechoByCIIdVictima(Integer CIIdVictima) {
+    /*@Override
+    public List<Hecho> getHechoByCIIdVictima(Integer CIIdVictima) {
         return hechoRepository.findByCIIdVictima(CIIdVictima);
-    }
+    }*/
 
+    @Override
+public List<Hecho> getHechoByVictima(Victima victima) {
+    return hechoRepository.findByVictima(victima);
+}
+
+
+    
     @Override
     public Hecho getHechoByCIIdProceso(Integer CIIdProceso) {
         return hechoRepository.findByCIIdProceso(CIIdProceso);
@@ -317,6 +356,11 @@ public class HechoServiceImpl implements HechoService {
 
 
 
+@Override
+public List<Hecho> getHechosByCodigoPaisVictima(Integer codigoPais) {
+    // Realiza la consulta en la base de datos usando el repositorio
+    return hechoRepository.findHechosByVictimaCodigoPais(codigoPais);
+}
 
 
 }

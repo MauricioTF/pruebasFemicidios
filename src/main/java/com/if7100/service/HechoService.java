@@ -56,7 +56,8 @@ public interface HechoService {
 
     Hecho getHechoByModalidad(Integer CIModalidad);
 
-    Hecho getHechoByCIIdVictima(Integer CIIdVictima);
+    //List<Hecho> getHechoByCIIdVictima(Integer CIIdVictima);
+    List<Hecho> getHechoByVictima(Victima victima);
 
     Hecho getHechoByCIIdProceso(Integer CIIdProceso);
 
@@ -74,6 +75,6 @@ public interface HechoService {
 
 
     
-
+    List<Hecho> getHechosByCodigoPaisVictima(Integer codigoPais);
 
 }

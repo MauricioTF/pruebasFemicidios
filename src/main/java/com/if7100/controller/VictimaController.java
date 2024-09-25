@@ -9,7 +9,9 @@ import com.if7100.service.IdentidadGeneroService;
 import com.if7100.service.NivelEducativoService;
 import com.if7100.service.OrganismoService;
 import com.if7100.service.OrientacionSexualService;
+import com.if7100.service.PaisesService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +23,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import java.util.stream.Collectors;
+import java.util.List;
+import java.util.stream.Stream;
 
 import com.if7100.service.PerfilService;
 
@@ -39,6 +44,9 @@ import java.util.stream.IntStream;
 @Controller
 public class VictimaController {
 	
+	 @Autowired
+ private PaisesService paisesService;
+
 	private VictimaService victimaService;
 	
 	//instancias para control de acceso
@@ -114,29 +122,46 @@ public class VictimaController {
 
 	@GetMapping("/victima/{pg}")
 	public String listVictima(Model model, @PathVariable Integer pg){
-		if (pg < 1){
+		/*if (pg < 1){
 			return "redirect:/victima/1";
-		}
+		}*/
+
+		this.validarPerfil();
+
+		// Obtener el código de país del usuario logueado
+		Integer codigoPaisUsuarioLogueado = this.usuario.getCodigoPais();
+		
+		// Filtrar Victimas por el código de país del usuario logueado
+		List<Victima> victimasFiltradas = victimaService.findByCodigoPais(codigoPaisUsuarioLogueado);
 
 		int numeroTotalElementos = victimaService.getAllVictima().size();
 
 		Pageable pageable = initPages(pg, 5, numeroTotalElementos);
 
-		Page<Victima> victimaPage = victimaService.getAllVictimaPage(pageable);
+		int tamanoPagina = pageable.getPageSize();
+        int numeroPagina = pageable.getPageNumber();
 
-		List<Integer> nPaginas = IntStream.rangeClosed(1, victimaPage.getTotalPages())
+		//Page<Victima> victimaPage = victimaService.getAllVictimaPage(pageable);
+
+		/*List<Integer> nPaginas = IntStream.rangeClosed(1, victimaPage.getTotalPages())
 				.boxed()
-				.toList();
+				.toList();*/
+
+		List<Victima> victimasPaginados = victimasFiltradas.stream()
+			.skip((long) numeroPagina * tamanoPagina)
+			.limit(tamanoPagina)
+			.collect(Collectors.toList());
+
+		List<Integer> nPaginas = IntStream.rangeClosed(1, (int) Math.ceil((double) numeroTotalElementos / tamanoPagina))
+			.boxed()
+			.toList();
 
 		model.addAttribute("PaginaActual", pg);
 		model.addAttribute("nPaginas", nPaginas);
-		model.addAttribute("victimas", victimaPage.getContent());
+		model.addAttribute("victimas", victimasPaginados);
 		model.addAttribute("identidadgenero", victimaService.getAllIdentidadGeneros());
 		model.addAttribute("orientacionSexual", victimaService.getAllOrientacionSexuales());
 		model.addAttribute("nivelEducativo", nivelEducativoService.getAllNivelEducativo());
-
-
-
 
 		return "victimas/victima";
 	}
@@ -157,7 +182,9 @@ public class VictimaController {
 				model.addAttribute("victima", victima);
 				model.addAttribute("nivelEducativo", nivelEducativoService.getAllNivelEducativo());
 
-
+				// Obtener lista de países y enviarla al modelo
+				List<Paises> paises = paisesService.getAllPaises();
+				model.addAttribute("paises", paises);
 				
 				bitacoraService.saveBitacora(new Bitacora(this.usuario.getCI_Id(),
 						this.usuario.getCVNombre(),this.perfil.getCVRol(),"Crea en Victima"));
@@ -179,6 +206,7 @@ public class VictimaController {
 		return "redirect:/victimas";
 	}
 	
+
 	@GetMapping("/victimas/{Id}")
 	public String deleteVictima (@PathVariable Integer Id) {
 		
@@ -211,6 +239,9 @@ public class VictimaController {
 			this.validarPerfil();
 			if(!this.perfil.getCVRol().equals("Consulta")) {
 				
+				List<Paises> paises = paisesService.getAllPaises();  // Obtiene la lista de países
+				model.addAttribute("paises", paises);  // Envía la lista de países al modelo
+
 				//model.addAttribute("orientacionSexual",orientacionSexualService.getAllOrientacionesSexuales());
 				model.addAttribute("identidadGenero",identidadGeneroService.getAllIdentidadGenero());
 				model.addAttribute("nivelEducativo",nivelEducativoService.getAllNivelEducativo());
@@ -236,6 +267,7 @@ public class VictimaController {
 								 Model model) {
 		
 		Victima existingVictima = victimaService.getVictimaById(id);
+		existingVictima.setCodigoPais(victima.getCodigoPais());//actualiza codigo pais
 		existingVictima.setCI_Id(id);
 		existingVictima.setCVDNI(victima.getCVDNI());
 		existingVictima.setCVNombre(victima.getCVNombre());

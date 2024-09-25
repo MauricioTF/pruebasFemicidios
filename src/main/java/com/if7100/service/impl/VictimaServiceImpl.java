@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.if7100.entity.IdentidadGenero;
+import com.if7100.entity.Imputado;
 import com.if7100.entity.Lugar;
 import com.if7100.entity.OrientacionSexual;
 import com.if7100.entity.TipoLugar;
@@ -108,4 +109,9 @@ public class VictimaServiceImpl implements VictimaService{
 	
 	
 
+	    //obtiene los usuarios por codigo país
+    @Override
+    public List<Victima> findByCodigoPais(Integer codigoPais) {
+        return victimaRepository.findByCodigoPais(codigoPais);
+    }
 }

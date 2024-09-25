@@ -1,6 +1,7 @@
 package com.if7100.repository;
 
 import com.if7100.entity.Hecho;
+import com.if7100.entity.Victima;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,7 +23,8 @@ public interface HechoRepository extends JpaRepository<Hecho, Integer> {
 
     Hecho findByCIModalidad(Integer CIModalidad);
 
-    Hecho findByCIIdVictima(Integer CIIdVictima);
+    //Hecho findByCIIdVictima(Integer CIIdVictima);
+    List<Hecho> findByVictima(Victima victima);
 
     Hecho findByCIIdProceso(Integer CIIdProceso);
 
@@ -40,5 +42,8 @@ public interface HechoRepository extends JpaRepository<Hecho, Integer> {
 
 
 
-
+   
+    
+    @Query("SELECT h FROM Hecho h WHERE h.victima.codigoPais = :codigoPais")
+    List<Hecho> findHechosByVictimaCodigoPais(@Param("codigoPais") Integer codigoPais);
 }
