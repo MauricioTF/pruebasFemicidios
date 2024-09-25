@@ -3,6 +3,9 @@ package com.if7100.controller;
 import com.if7100.entity.*;
 import com.if7100.service.*;
 
+import jakarta.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,16 +22,25 @@ import org.springframework.web.bind.annotation.PostMapping;
 import com.if7100.repository.UsuarioRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Controller
 public class ImputadoController {
 	
+
+
  private ImputadoService imputadoService;
 
+ @Autowired
  private PaisesService paisesService;
-//instancias para control de acceso
+ @Autowired
  private UsuarioRepository usuarioRepository;
+
+
+ private UsuarioService usuarioService;
+
+//instancias para control de acceso
  private Perfil perfil;
  private PerfilService perfilService;
 //instancias para control de bitacora
@@ -108,25 +120,39 @@ ImputadoService imputadoService, PerfilService perfilService, UsuarioRepository 
 	 return "redirect:/imputado/1";
  }
 
+
  @GetMapping("/imputado/{pg}")
  public String listImputado(Model model,@PathVariable Integer pg){
-	 if (pg < 1){
-		 return "redirect:/imputado/1";
-	 }
+	this.validarPerfil();
 
-	 int numeroTotalElementos = imputadoService.getAllImputados().size();
+	 // Obtener el código de país del usuario logueado
+	 	Integer codigoPaisUsuarioLogueado = this.usuario.getCodigoPais();
+		
+	  // Filtrar imputados por el código de país del usuario logueado
+	  List<Imputado> imputadosFiltrados = imputadoService.findByCodigoPais(codigoPaisUsuarioLogueado);
 
-	 Pageable pageable = initPages(pg, 5, numeroTotalElementos);
 
-	 Page<Imputado> imputadoPage = imputadoService.getAllImputadosPage(pageable);
+	  int numeroTotalElementos = imputadosFiltrados.size();
 
-	 List<Integer> nPaginas = IntStream.rangeClosed(1, imputadoPage.getTotalPages())
-			 .boxed()
-			 .toList();
+	  Pageable pageable = initPages(pg, 5, numeroTotalElementos);
+	  
+	  int tamanoPagina = pageable.getPageSize();
+      int numeroPagina = pageable.getPageNumber();
 
-	 model.addAttribute("PaginaActual", pg);
-	 model.addAttribute("nPaginas", nPaginas);
-	 model.addAttribute("imputados", imputadoPage.getContent());
+	  List<Imputado> imputadosPaginados = imputadosFiltrados.stream()
+                    .skip((long) numeroPagina * tamanoPagina)
+                    .limit(tamanoPagina)
+                    .collect(Collectors.toList());
+
+					List<Integer> nPaginas = IntStream.rangeClosed(1, (int) Math.ceil((double) numeroTotalElementos / tamanoPagina))
+                    .boxed()
+                    .toList();
+
+	  // Enviar datos al modelo
+	  model.addAttribute("PaginaActual", pg);
+	  model.addAttribute("nPaginas", nPaginas);
+	  model.addAttribute("imputados", imputadosPaginados);
+
 	 return "imputados/imputados";
  }
 
@@ -148,7 +174,12 @@ ImputadoService imputadoService, PerfilService perfilService, UsuarioRepository 
 				model.addAttribute("listaOrganismo",organismoService.getAllOrganismos());
 				model.addAttribute("imputado",new Imputado());
 
+				// Obtener lista de países y enviarla al modelo
+				List<Paises> paises = paisesService.getAllPaises();
+				model.addAttribute("paises", paises);
+
 				return "imputados/create_imputado";
+
 			}else {
 				return "SinAcceso";
 			}
@@ -195,11 +226,20 @@ ImputadoService imputadoService, PerfilService perfilService, UsuarioRepository 
  }
  
  @GetMapping("/imputados/edit/{id}")
- public String editImputadosForm(Model model,@PathVariable int id) {
+ public String editImputadosForm(HttpServletResponse response, Model model,@PathVariable int id) {
 	 
 	 try {
 			this.validarPerfil();
+			    // Evitar que el navegador cachee la página de edición
+				response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+				response.setHeader("Pragma", "no-cache");
+				response.setHeader("Expires", "0");
+
 			if(!this.perfil.getCVRol().equals("Consulta")) {
+
+				List<Paises> paises = paisesService.getAllPaises();  // Obtiene la lista de países
+				model.addAttribute("paises", paises);  // Envía la lista de países al modelo
+
 				model.addAttribute("paises", paisesService.getAllPaises());
 				model.addAttribute("orientacionSexual",orientacionSexualService.getAllOrientacionesSexuales());
 				model.addAttribute("identidadGenero",identidadGeneroService.getAllIdentidadGenero());
@@ -222,6 +262,8 @@ ImputadoService imputadoService, PerfilService perfilService, UsuarioRepository 
  @PostMapping("/imputados/{id}")
  public String updateUsuario(@PathVariable int id, @ModelAttribute("imputado") Imputado imputado, Model model) {
 	 Imputado existingImputado=imputadoService.getImputadoById(id);
+
+	 existingImputado.setCodigoPais(imputado.getCodigoPais());//actualiza codigo pais
 	 existingImputado.setCVDni(imputado.getCVDni());
 	 existingImputado.setCVGenero(imputado.getCVGenero());
 	 existingImputado.setCVNombre(imputado.getCVNombre());
@@ -229,7 +271,6 @@ ImputadoService imputadoService, PerfilService perfilService, UsuarioRepository 
 	 existingImputado.setCVSexo(imputado.getCVSexo());
 	 existingImputado.setCVLugarNacimiento(imputado.getCVLugarNacimiento());
 	 existingImputado.setCIEdad(imputado.getCIEdad());
-	 existingImputado.setCVPais(imputado.getCVPais());
 	 existingImputado.setCVNacionalidad(imputado.getCVNacionalidad());
 	 existingImputado.setCVAntecedentes(imputado.getCVAntecedentes());
 	 existingImputado.setCVEducacion(imputado.getCVEducacion());

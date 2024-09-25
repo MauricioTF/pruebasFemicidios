@@ -6,6 +6,7 @@ package com.if7100.controller;
 import com.if7100.entity.Bitacora; 
 import com.if7100.entity.Usuario;
 import com.if7100.service.BitacoraService;
+import com.if7100.service.PaisesService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.if7100.entity.Hecho;
+import com.if7100.entity.Paises;
 import com.if7100.entity.Perfil;
 /**
  * @author Liss
@@ -34,6 +36,7 @@ import com.if7100.service.UsuarioService;
 import jakarta.validation.Valid;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 
@@ -50,6 +53,8 @@ public class UsuarioController {
     private BitacoraService bitacoraService;
     private Usuario usuario;
 
+	@Autowired
+	private PaisesService paisesService;
 
 //prueba
 //private SessionRegistry sessionRegistry;
@@ -98,38 +103,48 @@ UsuarioService usuarioService, PerfilService perfilService, UsuarioRepository us
  }
 
  @GetMapping("/usuario/{pg}")
- public String listUsuario(Model model, @PathVariable Integer pg){
-	 try {
-		 this.validarPerfil();
-		 if(this.perfil.getCVRol().equals("Administrador")) {
+public String listUsuario(Model model, @PathVariable Integer pg) {
+    try {
+        this.validarPerfil();
+        if (this.perfil.getCVRol().equals("Administrador")) {
+            
+            // Obtener el código de país del usuario logueado
+            Integer codigoPaisUsuarioLogueado = this.usuario.getCodigoPais();
+            
+            // Filtrar usuarios por código de país
+            List<Usuario> usuariosFiltrados = usuarioService.getUsuariosByCodigoPais(codigoPaisUsuarioLogueado);
 
-			 if (pg < 1){
-				 return "redirect:/usuario/1";
-			 }
+            // Paginación
+            int numeroTotalElementos = usuariosFiltrados.size();
 
-			 int numeroTotalElementos = usuarioService.getAllUsuarios().size();
+            Pageable pageable = initPages(pg, 5, numeroTotalElementos);
 
-			 Pageable pageable = initPages(pg, 5, numeroTotalElementos);
+            int tamanoPagina = pageable.getPageSize();
+            int numeroPagina = pageable.getPageNumber();
 
-			 Page<Usuario> usuarioPage = usuarioService.getAllUsuariosPage(pageable);
+            List<Usuario> usuariosPaginados = usuariosFiltrados.stream()
+                    .skip((long) numeroPagina * tamanoPagina)
+                    .limit(tamanoPagina)
+                    .collect(Collectors.toList());
 
-			 List<Integer> nPaginas = IntStream.rangeClosed(1, usuarioPage.getTotalPages())
-					 .boxed()
-					 .toList();
+            List<Integer> nPaginas = IntStream.rangeClosed(1, (int) Math.ceil((double) numeroTotalElementos / tamanoPagina))
+                    .boxed()
+                    .toList();
 
-			 model.addAttribute("PaginaActual", pg);
-			 model.addAttribute("nPaginas", nPaginas);
-			 model.addAttribute("usuarios", usuarioPage.getContent());
-			 return "usuarios/usuarios";
-		 }else {
-			 return "SinAcceso";
-		 }
+            // Enviar datos al modelo
+            model.addAttribute("PaginaActual", pg);
+            model.addAttribute("nPaginas", nPaginas);
+            model.addAttribute("usuarios", usuariosPaginados);
 
-	 }catch (Exception e) {
-		 return "SinAcceso";
-	 }
- }
- 
+            return "usuarios/usuarios";
+        } else {
+            return "SinAcceso";
+        }
+    } catch (Exception e) {
+        return "SinAcceso";
+    }
+}
+
  
  // creacion de un nuevo usuario
  @GetMapping("/usuarios/new")
@@ -139,8 +154,13 @@ UsuarioService usuarioService, PerfilService perfilService, UsuarioRepository us
 			this.validarPerfil();
 			if(this.perfil.getCVRol().equals("Administrador")) {
 				
-				Usuario usuario=new Usuario();
-				 model.addAttribute("usuario", usuario);
+				Usuario usuario=new Usuario();				 
+				model.addAttribute("usuario", usuario);
+
+				 // Obtener lista de países y enviarla al modelo
+				 List<Paises> paises = paisesService.getAllPaises();
+				 model.addAttribute("paises", paises);
+
 				 return "usuarios/create_usuario";
 			}else {
 				return "SinAcceso";
@@ -151,26 +171,24 @@ UsuarioService usuarioService, PerfilService perfilService, UsuarioRepository us
 		}
  }
  
-
- 
  
  @PostMapping("/usuarios")
  public String saveUsuario(@Valid @ModelAttribute("usuario") Usuario usuario, BindingResult result) {
-	 if(result.hasErrors()) {
-		 return "redirect:/create_usuario";
-	 }else {
+	 if (result.hasErrors()) {
+		 return "usuarios/create_usuario";
+	 } else {
 		 usuarioService.saveUsuario(usuario);
-		 String descripcion="Creo un Nuevo Usuario con id: "+ usuario.getCI_Id();
-	     Bitacora bitacora = new Bitacora(this.usuario.getCI_Id(), this.usuario.getCVNombre(), this.perfil.getCVRol(), descripcion);
-	     bitacoraService.saveBitacora(bitacora);
+ 
+		 String descripcion = "Creo un Nuevo Usuario con id: " + usuario.getCI_Id();
+		 Bitacora bitacora = new Bitacora(this.usuario.getCI_Id(), this.usuario.getCVNombre(), this.perfil.getCVRol(), descripcion);
+		 bitacoraService.saveBitacora(bitacora);
+ 
 		 return "redirect:/usuarios";
 	 }
  }
+
  
- 
- 
- 
- 
+
  
  //Eliminar Usuario
  @GetMapping("/usuarios/{Id}")
@@ -196,10 +214,6 @@ UsuarioService usuarioService, PerfilService perfilService, UsuarioRepository us
  }
  
  
- 
- 
- 
- 
  //EditarUsuario
  @GetMapping("/usuarios/edit/{Id}")
  public String editUsuarioForm(@PathVariable Integer Id, Model model) {
@@ -208,6 +222,9 @@ UsuarioService usuarioService, PerfilService perfilService, UsuarioRepository us
 			this.validarPerfil();
 			if(this.perfil.getCVRol().equals("Administrador")) {
 				
+				List<Paises> paises = paisesService.getAllPaises();  // Obtiene la lista de países
+				model.addAttribute("paises", paises);  // Envía la lista de países al modelo
+
 				model.addAttribute("usuario", usuarioService.getUsuarioById(Id));
 				return "usuarios/edit_usuario";
 			}else {
@@ -219,6 +236,7 @@ UsuarioService usuarioService, PerfilService perfilService, UsuarioRepository us
 		}
  }
  
+
  @PostMapping("/usuarios/{Id}")
  public String updateUsuario(@PathVariable Integer Id, @ModelAttribute("usuario") Usuario usuario) {
 	 Usuario existingUsuario=usuarioService.getUsuarioById(Id);
@@ -228,6 +246,7 @@ UsuarioService usuarioService, PerfilService perfilService, UsuarioRepository us
 	 existingUsuario.setCVApellidos(usuario.getCVApellidos());
 	 existingUsuario.setCIPerfil(usuario.getCIPerfil());
 	 existingUsuario.setTCClave(usuario.getTCClave());
+	 existingUsuario.setCodigoPais(usuario.getCodigoPais());  // Actualiza el país seleccionado
 	 usuarioService.updateUsuario(existingUsuario);
 	 String descripcion="Actualizo un Usuario con id: "+ Id;
      Bitacora bitacora = new Bitacora(this.usuario.getCI_Id(), this.usuario.getCVNombre(), this.perfil.getCVRol(), descripcion);

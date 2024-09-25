@@ -15,6 +15,7 @@
                 <h2 class="text-info">Crear Imputado</h2>
             </div>
             <form th:action="@{/imputados}" th:object="${imputado}" method="post" class="mw-100 m-3">
+                
                 <div class="row align-items-end">
                     <div class="w-100"></div>
                     <div class="col">
@@ -30,6 +31,7 @@
                                 placeholder="Digite el nombre del imputado"/></div>
                     </div>
                 </div>
+
                 <div class="row align-items-end">
                     <div class="w-100"></div>
                     <div class="col">
@@ -46,6 +48,7 @@
                                                    placeholder="Digite el lugar de nacimiento del imputado"/></div>
                     </div>
                 </div>
+
                 <div class="row align-items-end">
                     <div class="w-100"></div>
                     <div class="col">
@@ -63,6 +66,7 @@
                                                    placeholder="Digite la condicion migratoria del imputado"/></div>
                     </div>
                 </div>
+
                 <div class="row align-items-end">
                     <div class="w-100"></div>
                     <div class="col">
@@ -79,6 +83,7 @@
                                 placeholder="Digite la ocupacion del imputado"/></div>
                     </div>
                 </div>
+
                 <div class="row align-items-end">
                     <div class="w-100"></div>
                     <div class="col">
@@ -94,6 +99,7 @@
                                 placeholder="Digite el estado conyugal del imputado"/></div>
                     </div>
                 </div>
+
                 <div class="row align-items-end">
                     <div class="w-100"></div>
                     <div class="col">
@@ -118,6 +124,7 @@
                         </select></div>
                     </div>
                 </div>
+
                 <div class="row align-items-end">
                     <div class="w-100"></div>
                     <div class="col">
@@ -144,17 +151,16 @@
 						</div>
             
                 </div>
+
                 <div class="row align-items-end">
                     <div class="w-100"></div>
                     <div class="col">
                         <div class="mb-3 mx-3"><label class="form-label" for="name">Digite el pais del
-                            hecho</label><select th:name="codigoPais" th:field="*{CVPais}"
-                                                 onfocus="ocultarError()" id="name-14" class="form-select" required>
-                            <optgroup label="Paises">
-                                <option th:each="pais: ${paises}" th:value="${pais.spanish}"
-                                        th:text="${pais.spanish} + ' - ' + ${pais.telefonoPais}"></option>
-                            </optgroup>
-                        </select></div>
+                            <select th:field="*{codigoPais}" class="form-select" required>
+                                <option value="" disabled selected>Seleccione un país</option>
+                                <option th:each="pais : ${paises}" th:value="${pais.id}" th:text="${pais.spanish}"></option>
+                            </select> 
+                        </div>
                     </div>
                     <div class="col">
                         <div class="mb-3 mx-3"><label class="form-label" for="name">Seleccione el organismo generador de
@@ -167,6 +173,7 @@
                         </select></div>
                     </div>
                 </div>
+
                 <div class="row align-items-end">
                     <div class="w-100"></div>
                     <div class="col">
@@ -191,6 +198,7 @@
                         </select></div>
                     </div>
                 </div>
+
                 <div class="row align-items-end">
                     <div class="w-100"></div>
                     <div class="col">
@@ -214,8 +222,11 @@
                         </select></div>
                     </div>
                 </div>
+
                 <div class="row align-items-end">
                     <div class="w-100"></div>
+
+
                     <div class="col">
                         <div class="mb-3 mx-3"><label class="form-label" for="name">Digite el domicilio del
                             imputado</label><input th:name="domicilio" th:field="*{CVDomicilio}" id="name-20"
@@ -223,7 +234,8 @@
                                                    maxlength="50" required
                                                    placeholder="Digite el domicilio del imputado"/></div>
                     </div>
-                     <div class="col">
+                  
+                    <div class="col">
                         <div class="mb-3 mx-3"><label class="form-label" for="name">Seleccione la situacion juridica del
                             imputado</label><select th:name="situacionJuridica" th:field="*{CVSituacionJuridica}"
                                                     id="name-13" class="form-select" required>
@@ -233,7 +245,10 @@
                             </optgroup>
                         </select></div>
                     </div>
+                    
                 </div>
+
+
                 <div class="row align-items-end">
                     <div class="w-100"></div>
                     <div class="col">
@@ -241,8 +256,8 @@
                             <button class="btn btn-primary" type="submit">Agregar</button>
                         </div>
                     </div>
-                
                 </div>
+
             </form>
         </div>
     </section>

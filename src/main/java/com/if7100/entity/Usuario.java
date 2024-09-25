@@ -43,6 +43,8 @@ public class Usuario{
 	@Column(name = "TC_Clave", nullable = false)
 	private String TCClave;
 	
+	@Column(name = "codigo_pais", nullable = false)
+	private Integer codigoPais;
 	
 	
 	/*@ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
@@ -64,16 +66,18 @@ public class Usuario{
 		this.CVNombre = usuario.CVNombre;
 		this.CVApellidos = usuario.CVApellidos;
 		this.CIPerfil = usuario.CIPerfil;
+		this.codigoPais = usuario.codigoPais;
 		this.TCClave = usuario.TCClave;
 	}
 	
 
-	public Usuario(String cVCedula, String cVNombre, String cVApellidos, int cIPerfil, String tCClave) {
+	public Usuario(String cVCedula, String cVNombre, String cVApellidos, int cIPerfil, int codigoPais, String tCClave) {
 		super();
 		CVCedula = cVCedula;
 		CVNombre = cVNombre;
 		CVApellidos = cVApellidos;
 		CIPerfil = cIPerfil;
+		this.codigoPais = codigoPais;
 		TCClave = tCClave;
 	}
 
@@ -126,5 +130,13 @@ public class Usuario{
 		CIPerfil = cIPerfil;
 	}
 	
+	//pais
+	public Integer getCodigoPais() {
+		return this.codigoPais;
+	}
+
+	public void setCodigoPais(int codigoPais) {
+		this.codigoPais = codigoPais;
+	}
 }
 

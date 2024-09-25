@@ -6,6 +6,7 @@ com\if7100\repository\PaisesidentIdadesgenerosRepository.class
 com\if7100\controller\PaisesController.class
 com\if7100\service\impl\UsuarioServiceImpl.class
 com\if7100\service\SituacionJuridicaService.class
+com\if7100\controller\HechoOrganismoController.class
 com\if7100\controller\ProcesoJudicialController.class
 com\if7100\entity\Perfil.class
 com\if7100\repository\OrientacionSexualRepository.class
@@ -23,6 +24,7 @@ com\if7100\service\BitacoraService.class
 com\if7100\service\impl\VictimaServiceImpl.class
 com\if7100\controller\RedireccionController.class
 com\if7100\entity\TipoLugar.class
+com\if7100\service\impl\HechoServiceImpl.class
 com\if7100\service\impl\TipoVictimaServiceImpl.class
 com\if7100\service\TipoVictimaService.class
 com\if7100\service\impl\PaisesServiceImpl.class
@@ -46,6 +48,7 @@ com\if7100\service\impl\SituacionJuridicaServiceImpl.class
 com\if7100\controller\UsuarioController.class
 com\if7100\entity\Organismo.class
 com\if7100\service\impl\TipoOrganismoServiceImpl.class
+com\if7100\controller\LugarController.class
 com\if7100\repository\HechoImputadoRepository.class
 com\if7100\entity\HechoImputado.class
 com\if7100\service\impl\LugarServiceImpl.class
@@ -78,6 +81,7 @@ com\if7100\service\impl\TipoLugarServiceImpl.class
 com\if7100\repository\BitacoraRepository.class
 com\if7100\entity\Paises.class
 com\if7100\repository\NivelEducativoRepository.class
+com\if7100\service\impl\HechoImputadoServiceImpl.class
 com\if7100\service\IdentidadGeneroService.class
 com\if7100\service\DependienteService.class
 com\if7100\service\impl\OrganismoServiceImpl.class
@@ -108,6 +112,7 @@ com\if7100\service\impl\PerfilServiceImpl.class
 com\if7100\controller\ModalidadController.class
 com\if7100\service\HechoImputadoService.class
 com\if7100\service\UsuarioService.class
+com\if7100\controller\HechoController.class
 com\if7100\controller\ImputadoController.class
 com\if7100\usuarios\seguridad\SecurityController.class
 com\if7100\repository\TipoVictimaRepository.class
