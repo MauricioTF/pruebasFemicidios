@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.if7100.entity.Organismo;
+import com.if7100.entity.Victima;
 import com.if7100.repository.OrganismoRepository;
 import com.if7100.service.OrganismoService;
 
@@ -69,4 +70,10 @@ public class OrganismoServiceImpl implements OrganismoService {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	    //obtiene los usuarios por codigo país
+    @Override
+    public List<Organismo> findByCodigoPais(Integer codigoPais) {
+        return organismoRepository.findByCodigoPais(codigoPais);
+    }
 }

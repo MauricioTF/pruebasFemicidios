@@ -4,11 +4,11 @@ import com.if7100.entity.Bitacora;
 import com.if7100.entity.Usuario;
 import com.if7100.service.BitacoraService;
 
-import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.springframework.data.domain.Page;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -20,11 +20,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import com.if7100.entity.Hecho;
 import com.if7100.entity.Organismo;
+import com.if7100.entity.Paises;
 import com.if7100.entity.Perfil;
 import com.if7100.repository.UsuarioRepository;
 import com.if7100.service.OrganismoService;
+import com.if7100.service.PaisesService;
 import com.if7100.service.PerfilService;
 import com.if7100.service.TipoOrganismoService;
 
@@ -32,6 +33,10 @@ import com.if7100.service.TipoOrganismoService;
 @Controller
 public class OrganismoController {
 	
+
+	  @Autowired
+    private PaisesService paisesService;
+
  private OrganismoService organismoService;
  private TipoOrganismoService tipoOrganismoService;
 
@@ -94,23 +99,39 @@ OrganismoService organismoService, TipoOrganismoService tipoOrganismoService, Pe
  @GetMapping("/organismo/{pg}")
  public String listOrganismo(Model model, @PathVariable Integer pg){
 
-	 if (pg < 1){
+	 /*if (pg < 1){
 		 return "redirect:/organismo/1";
-	 }
+	 }*/
 
+	 this.validarPerfil();
+
+	// Obtener el código de país del usuario logueado
+	Integer codigoPaisUsuarioLogueado = this.usuario.getCodigoPais();
+// Buscar el país por el código del país almacenado en Hecho
+	Paises pais = paisesService.getPaisByID(codigoPaisUsuarioLogueado);
+
+	List<Organismo> organismosFiltrados = organismoService.findByCodigoPais(codigoPaisUsuarioLogueado);
+	
 	 int numeroTotalElementos = organismoService.getAllOrganismos().size();
 
 	 Pageable pageable = initPages(pg, 5, numeroTotalElementos);
 
-	 Page<Organismo> organismoPage = organismoService.getAllOrganismosPage(pageable);
+	 int tamanoPagina = pageable.getPageSize();
+     int numeroPagina = pageable.getPageNumber();
 
-	 List<Integer> nPaginas = IntStream.rangeClosed(1, organismoPage.getTotalPages())
-			 .boxed()
-			 .toList();
+	 List<Organismo> organismosPaginados = organismosFiltrados.stream()
+			.skip((long) numeroPagina * tamanoPagina)
+			.limit(tamanoPagina)
+			.collect(Collectors.toList());
+	
+			List<Integer> nPaginas = IntStream.rangeClosed(1, (int) Math.ceil((double) numeroTotalElementos / tamanoPagina))
+			.boxed()
+			.toList();
 
 	 model.addAttribute("PaginaActual", pg);
 	 model.addAttribute("nPaginas", nPaginas);
-	 model.addAttribute("organismos", organismoPage.getContent());
+	 model.addAttribute("organismos", organismosPaginados);
+	 model.addAttribute("nombrePais", pais.getSpanish());
 	 return "organismos/organismos";
  }
  
@@ -122,6 +143,11 @@ OrganismoService organismoService, TipoOrganismoService tipoOrganismoService, Pe
 				
 				model.addAttribute("organismo",new Organismo());
 				model.addAttribute("tipoOrganismo", tipoOrganismoService.getAllTipoOrganismos());
+
+				// Obtener lista de países y enviarla al modelo
+				List<Paises> paises = paisesService.getAllPaises();
+				model.addAttribute("paises", paises);
+
 				return "organismos/create_organismo";
 			}else {
 				return "SinAcceso";
@@ -136,8 +162,7 @@ OrganismoService organismoService, TipoOrganismoService tipoOrganismoService, Pe
  public String savOrganismo(@ModelAttribute("organismo") Organismo organismo) {
 	 
 	 if (!organismo.getCVNombre().equals("") && !organismo.getCVRol().equals("") && 
-	 !organismo.getCVNacionalidad().equals("") && !organismo.getCVContacto().equals("") &&
-	 !organismo.getCVTipo_Organismo().equals("")){
+	 !organismo.getCVContacto().equals("")){
 		 organismoService.saveOrganismo(organismo);
 		 return "redirect:/organismos";
 	}
@@ -173,7 +198,9 @@ OrganismoService organismoService, TipoOrganismoService tipoOrganismoService, Pe
 	 try {
 			this.validarPerfil();
 			if(!this.perfil.getCVRol().equals("Consulta")) {
-				
+				List<Paises> paises = paisesService.getAllPaises();  // Obtiene la lista de países
+				model.addAttribute("paises", paises);  // Envía la lista de países al modelo
+
 				model.addAttribute("organismo", organismoService.getOrganismoById(id));
 				model.addAttribute("tipoOrganismo", tipoOrganismoService.getAllTipoOrganismos());
 				return "organismos/edit_organismo";
@@ -191,11 +218,11 @@ OrganismoService organismoService, TipoOrganismoService tipoOrganismoService, Pe
 	 Organismo existingOrganismo=organismoService.getOrganismoById(id);
 	 model.addAttribute("tipoOrganismo", tipoOrganismoService.getAllTipoOrganismos());
 
+	 existingOrganismo.setCodigoPais(existingOrganismo.getCodigoPais());//actualiza codigo pais
 	 existingOrganismo.setCI_Id(id);
-	 existingOrganismo.setCVNombre(organismo.getCVNombre());
+	 existingOrganismo.setCVNombre(existingOrganismo.getCVNombre());
 	 existingOrganismo.setCVRol(organismo.getCVRol());
 	 existingOrganismo.setCVTipo_Organismo(organismo.getCVTipo_Organismo());
-	 existingOrganismo.setCVNacionalidad(organismo.getCVNacionalidad());
 	 existingOrganismo.setCVContacto(organismo.getCVContacto());
 
 	 

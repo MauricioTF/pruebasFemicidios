@@ -21,14 +21,13 @@ public class Organismo {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Organismo(String CVNombre, String CVRol, String CVTipo_Organismo , String CVNacionalidad, String CVContacto) {
+	public Organismo(String CVNombre, String CVRol, String CVTipo_Organismo, String CVContacto, int codigoPais) {
 		super();
 		this.CVNombre=CVNombre;
 		this.CVRol=CVRol;
 		this.CVTipo_Organismo=CVTipo_Organismo;
-		this.CVNacionalidad=CVNacionalidad;
 		this.CVContacto=CVContacto;
-		
+		this.codigoPais = codigoPais;
 	}
 	
 	@Id
@@ -44,13 +43,12 @@ public class Organismo {
 	@Column(name="CV_Tipo_Organismo",nullable=false)
 	private String CVTipo_Organismo;
 	
-	@Column(name="CV_Nacionalidad",nullable=false)
-	private String CVNacionalidad;
-	
 	@Column(name="CV_Contacto",nullable=false)
 	private String CVContacto;
 	
-	
+	@Column(name = "codigo_pais", nullable = false)
+	private Integer codigoPais;
+
 	public int getCI_Id() {
 		return CI_Id;
 	}
@@ -81,15 +79,6 @@ public class Organismo {
 		CVTipo_Organismo = cVTipo_Organismo;
 	}
 
-
-	public String getCVNacionalidad() {
-		return CVNacionalidad;
-	}
-
-	public void setCVNacionalidad(String cVNacionalidad) {
-		CVNacionalidad = cVNacionalidad;
-	}
-
 	public String getCVContacto() {
 		return CVContacto;
 	}
@@ -98,6 +87,15 @@ public class Organismo {
 		CVContacto = cVContacto;
 	}
 	
+	// pais
+	public Integer getCodigoPais() {
+		return this.codigoPais;
+	}
+
+	public void setCodigoPais(int codigoPais) {
+		this.codigoPais = codigoPais;
+	}
+
 }
 	
 	

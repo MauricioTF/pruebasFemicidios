@@ -9,6 +9,8 @@ import com.if7100.entity.Paises;
 import com.if7100.repository.PaisesRepository;
 import com.if7100.service.PaisesService;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 public class PaisesServiceImpl implements PaisesService {
 
@@ -39,7 +41,13 @@ public class PaisesServiceImpl implements PaisesService {
 
     @Override
     public Paises getPaisByID(int id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getPaisByID'");
+    Optional<Paises> paisOptional = paisesRepository.findById(id);
+    
+    // Verifica si el país existe y devuelve el objeto Paises o lanza una excepción
+    if (paisOptional.isPresent()) {
+        return paisOptional.get();
+    } else {
+        throw new EntityNotFoundException("País con ID " + id + " no encontrado");
+    }
     }
 }

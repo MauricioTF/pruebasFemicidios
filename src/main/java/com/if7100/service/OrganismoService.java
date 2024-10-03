@@ -6,6 +6,8 @@ package com.if7100.service;
 import java.util.List;
 
 import com.if7100.entity.Organismo;
+import com.if7100.entity.Victima;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -26,5 +28,8 @@ public interface OrganismoService {
  
  Organismo getOrganismoByCVNombre(String CV_Nombre);
 
-    Page<Organismo> getAllOrganismosPage(Pageable pageable);
+ Page<Organismo> getAllOrganismosPage(Pageable pageable);
+
+ public List<Organismo> findByCodigoPais(Integer codigoPais);//obtiene los usuarios por codigo país
+
 }
