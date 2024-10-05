@@ -66,16 +66,18 @@
 						</div>
 						<div class="col">
 							<div class="mb-3 mx-3">
-								<label class="form-label" for="name">Seleccione el
-									proceso judicial</label><select th:name="proceso"
-									th:field="*{CIIdProceso}" onfocus="ocultarError()" id="name-3"
-									class="form-select" required>
-									<optgroup label="Proceso Judicial">
-										<option th:each="procesos: ${proceso}"
-											th:value="${procesos.CI_Id}"
-											th:text="${procesos.CI_Id} + ' - ' + ${procesos.CVEstado}"></option>
-									</optgroup>
-								</select>
+								<div class="mb-3 mx-3">
+									<label class="form-label" for="name">Seleccione el proceso judicial
+									</label><select th:name="proceso" th:field="*{ProcesoJudicial}"
+										onfocus="ocultarError()" id="name-1" class="form-select"
+										required>
+										<optgroup label="Procesos judiciales">
+											<option th:each="prcoeso: ${ProcesoJudicial}"
+												th:value="${prcoeso.CI_Id}"
+												th:text="${prcoeso.CI_Id} + ' - ' + ${prcoeso.CVEstado}"></option>
+										</optgroup>
+									</select>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -151,7 +153,7 @@
 						<div class="col">
 							<div class="mb-3 mx-3">
 								<label class="form-label" for="name">Seleccione el pais
-									del hecho</label><select th:name="codigoPais" th:field="*{CIPais}"
+									del hecho</label><select th:name="codigoPais" th:field="*{codigoPais}"
 									onfocus="ocultarError()" id="name-9" class="form-select"
 									required>
 									<optgroup label="Paises">

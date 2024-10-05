@@ -24,6 +24,7 @@ import com.if7100.service.PerfilService;
 import com.if7100.service.ProcesoJudicialService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Controller
@@ -86,23 +87,33 @@ private Usuario usuario;
  @GetMapping("/procesojudicial/{pg}")
  public String listProcesoJudicial(Model model, @PathVariable Integer pg){
 
-	 if (pg < 1){
-		 return "redirect:/procesojudicial/1";
-	 }
+	 validarPerfil();
 
-	 int numeroTotalElementos = procesoJudicialService.getAllProcesosJudiciales().size();
+	 Integer codigoPaisUsuario = this.usuario.getCodigoPais();
+
+	 // Obtener los procesos judiciales filtrados por el código de país
+	 List<ProcesoJudicial> procesosJudicialesFiltrados = procesoJudicialService.getProcesosJudicialesByCodigoPaisUsuario(codigoPaisUsuario);
+    
+	 int numeroTotalElementos = procesosJudicialesFiltrados.size();
 
 	 Pageable pageable = initPages(pg, 5, numeroTotalElementos);
 
-	 Page<ProcesoJudicial> procesoJudicialPage = procesoJudicialService.getAllProcesosJudicialesPage(pageable);
+	 int tamanoPagina = pageable.getPageSize();
+     int numeroPagina = pageable.getPageNumber();
 
-	 List<Integer> nPaginas = IntStream.rangeClosed(1, procesoJudicialPage.getTotalPages())
-			 .boxed()
-			 .toList();
+	 List<ProcesoJudicial> procesoJudicialesPaginados = procesosJudicialesFiltrados.stream()
+			.skip((long) numeroPagina * tamanoPagina)
+			.limit(tamanoPagina)
+			.collect(Collectors.toList());
+
+		List<Integer> nPaginas = IntStream.rangeClosed(1, (int) Math.ceil((double) numeroTotalElementos / tamanoPagina))
+			.boxed()
+			.toList();
+
 
 	 model.addAttribute("PaginaActual", pg);
 	 model.addAttribute("nPaginas", nPaginas);
-	 model.addAttribute("procesosJudiciales", procesoJudicialPage.getContent());
+	 model.addAttribute("procesosJudiciales", procesoJudicialesPaginados);
 
 	 return "procesosJudiciales/procesosJudiciales";
 

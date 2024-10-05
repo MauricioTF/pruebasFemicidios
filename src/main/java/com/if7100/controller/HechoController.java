@@ -1,8 +1,9 @@
 package com.if7100.controller;
 
 import com.if7100.entity.Hecho;
-
+import com.if7100.entity.Paises;
 import com.if7100.entity.Perfil;
+import com.if7100.entity.ProcesoJudicial;
 import com.if7100.entity.Usuario;
 import com.if7100.entity.Victima;
 import com.if7100.entity.Bitacora;
@@ -115,7 +116,7 @@ public void exportToPDF(HttpServletResponse response) throws IOException, java.i
     for (Hecho hecho : hechos) {
         document.add(new Paragraph("ID: " + hecho.getCI_Id()));
         document.add(new Paragraph("Tipo de Víctima: " + hecho.getCITipoVictima()));
-        document.add(new Paragraph("País: " + hecho.getCIPais()));
+        document.add(new Paragraph("País: " + hecho.getCodigoPais()));
         document.add(new Paragraph("Provincia: " + hecho.getCVProvincia()));
         document.add(new Paragraph("Canton: " + hecho.getCVCanton()));
         document.add(new Paragraph("Distrito: " + hecho.getCVDistrito()));
@@ -166,14 +167,10 @@ public void exportToPDF(HttpServletResponse response) throws IOException, java.i
     @GetMapping("/hecho/{pg}")
     public String listHecho(Model model, @PathVariable Integer pg){
 
-        /*if (pg < 1){
-            return "redirect:/hecho/1";
-        }*/
-
         this.validarPerfil();
         
         Integer codigoPaisUsuario = this.usuario.getCodigoPais();
-        List<Hecho> hechosFiltrados = hechoService.getHechosByCodigoPaisVictima(codigoPaisUsuario);
+        List<Hecho> hechosFiltrados = hechoService.getHechosByCodigoPaisVictimaYHecho(codigoPaisUsuario);
     
 
         int numeroTotalElementos = hechosFiltrados.size();
@@ -183,8 +180,6 @@ public void exportToPDF(HttpServletResponse response) throws IOException, java.i
         int tamanoPagina = pageable.getPageSize();
         int numeroPagina = pageable.getPageNumber();
 
-        //Page<Hecho> hechoPage = hechoService.getAllHechosPage(pageable);
-
         List<Hecho> hechosPaginados = hechosFiltrados.stream()
 			.skip((long) numeroPagina * tamanoPagina)
 			.limit(tamanoPagina)
@@ -193,10 +188,6 @@ public void exportToPDF(HttpServletResponse response) throws IOException, java.i
 		List<Integer> nPaginas = IntStream.rangeClosed(1, (int) Math.ceil((double) numeroTotalElementos / tamanoPagina))
 			.boxed()
 			.toList();
-
-        /*List<Integer> nPaginas = IntStream.rangeClosed(1, hechoPage.getTotalPages())
-                .boxed()
-                .toList();*/
 
         model.addAttribute("PaginaActual", pg);
         model.addAttribute("nPaginas", nPaginas);
@@ -221,6 +212,11 @@ public void exportToPDF(HttpServletResponse response) throws IOException, java.i
 				Hecho hecho = new Hecho();
 		        model.addAttribute("hecho", hecho);
                 modelAttributes(model);
+
+                // Obtener lista de países y enviarla al modelo
+				List<Paises> paises = paisesService.getAllPaises();
+				model.addAttribute("paises", paises);
+
                 return "hechos/create_hecho";
 			}else {
 				return "SinAcceso";
@@ -236,7 +232,7 @@ public void exportToPDF(HttpServletResponse response) throws IOException, java.i
         model.addAttribute("tipoVictima", tipoVictimaService.getAllTipoVictimas());
         model.addAttribute("tipoRelacion", tipoRelacionService.getAllTipoRelaciones());
         model.addAttribute("victima", victimaService.getAllVictima());
-        model.addAttribute("proceso", procesoJudicialService.getAllProcesosJudiciales());
+        model.addAttribute("ProcesoJudicial", procesoJudicialService.getAllProcesosJudiciales());
         model.addAttribute("organismo", organismoService.getAllOrganismos());
         model.addAttribute("paises", paisesService.getAllPaises());
     }
@@ -293,7 +289,12 @@ public void exportToPDF(HttpServletResponse response) throws IOException, java.i
 			this.validarPerfil();
 			if(!this.perfil.getCVRol().equals("Consulta")) {
 				
-				model.addAttribute("hecho", hechoService.getHechoById(id));
+
+                model.addAttribute("victima", victimaService.getAllVictima());
+                model.addAttribute("ProcesoJudicial", procesoJudicialService.getAllProcesosJudiciales());
+        
+                
+                model.addAttribute("hecho", hechoService.getHechoById(id));
                 modelAttributes(model);
                 return "hechos/edit_hecho";
 			}else {
@@ -311,15 +312,18 @@ public void exportToPDF(HttpServletResponse response) throws IOException, java.i
             Hecho existingHecho = hechoService.getHechoById(id);
             String descripcion="Actualizo en Hechos, de: " + existingHecho.getCI_Id() + " | a: " + id;
             existingHecho.setCI_Id(id);
-            existingHecho.setCIPais(hecho.getCIPais());
+            existingHecho.setCodigoPais(hecho.getCodigoPais());
             existingHecho.setCVProvincia(hecho.getCVProvincia());
             existingHecho.setCVCanton(hecho.getCVCanton());
             existingHecho.setCVDistrito(hecho.getCVDistrito());
             existingHecho.setCITipoVictima(hecho.getCITipoVictima());
             existingHecho.setCITipoRelacion(hecho.getCITipoRelacion());
             existingHecho.setCIModalidad(hecho.getCIModalidad());
+
+            existingHecho.setProcesoJudicial(hecho.getProcesoJudicial());
+            existingHecho.setVictima(hecho.getVictima());   
             //existingHecho.setCIIdVictima(hecho.getCIIdVictima());
-            existingHecho.setCIIdProceso(hecho.getCIIdProceso());
+            //existingHecho.setCIIdProceso(hecho.getCIIdProceso());
             existingHecho.setCIIdGenerador(hecho.getCIIdGenerador());
             existingHecho.setCVAgresionSexual(hecho.getCVAgresionSexual());
             existingHecho.setCVDenunciaPrevia(hecho.getCVDenunciaPrevia());
@@ -346,13 +350,7 @@ public void exportToPDF(HttpServletResponse response) throws IOException, java.i
 
 
     
-// Método para filtrar hechos por país
-@GetMapping("/hechos/filterByPais")
-@ResponseBody
-public List<Hecho> filtrarHechosPorPais(@RequestParam("pais") Integer codigoPais) {
-    // Buscar hechos filtrados por código de país
-    return hechoService.getHechoByPais(codigoPais);
-}
+
 
     
 }

@@ -1,6 +1,7 @@
 package com.if7100.repository;
 
 import com.if7100.entity.Hecho;
+import com.if7100.entity.ProcesoJudicial;
 import com.if7100.entity.Victima;
 
 import java.time.LocalDate;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Repository;
 public interface HechoRepository extends JpaRepository<Hecho, Integer> {
 
     //probando
-    List<Hecho> findByCIPais(Integer CIPais);
 
     Hecho findByCITipoVictima(Integer CITipoVictima);
 
@@ -26,7 +26,8 @@ public interface HechoRepository extends JpaRepository<Hecho, Integer> {
     //Hecho findByCIIdVictima(Integer CIIdVictima);
     List<Hecho> findByVictima(Victima victima);
 
-    Hecho findByCIIdProceso(Integer CIIdProceso);
+    //Hecho findByCIIdProceso(Integer CIIdProceso);
+    List<Hecho> findByProcesoJudicial(ProcesoJudicial procesoJudicial);
 
     Hecho findByCVAgresionSexual(String CVAgresionSexual);
 
@@ -42,8 +43,12 @@ public interface HechoRepository extends JpaRepository<Hecho, Integer> {
 
 
 
-   
-    
+    //Muestra los hechos segun el codigo de pais del hecho
+    List<Hecho> findByCodigoPais(Integer codigoPais);
+
+    //Muestra los hechos segun el codigo de pais de la victima
     @Query("SELECT h FROM Hecho h WHERE h.victima.codigoPais = :codigoPais")
     List<Hecho> findHechosByVictimaCodigoPais(@Param("codigoPais") Integer codigoPais);
+
+   
 }

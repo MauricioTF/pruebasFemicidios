@@ -17,10 +17,6 @@ public class Hecho {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer CI_Id;
 
-    @Column(name = "CI_Pais", nullable = false)
-    private Integer CIPais;
-    
-
     @Column(name = "CI_Tipo_Victima", nullable = false)
     private Integer CITipoVictima;
 
@@ -30,21 +26,21 @@ public class Hecho {
     @Column(name = "CI_Modalidad", nullable = false)
     private Integer CIModalidad;
 
-   //@Column(name = "CI_Id_Victima", nullable = false)
-   //private Integer CIIdVictima;
+    // @Column(name = "CI_Id_Victima", nullable = false)
+    // private Integer CIIdVictima;
 
-    @Column(name = "CI_Id_Proceso", nullable = false)
-    private Integer CIIdProceso;
-    
+    //@Column(name = "CI_Id_Proceso", nullable = false)
+    //private Integer CIIdProceso;
+
     @Column(name = "CV_Provincia", nullable = false)
     private String CVProvincia;
-    
+
     @Column(name = "CV_Canton", nullable = false)
     private String CVCanton;
-    
+
     @Column(name = "CV_Distrito", nullable = false)
     private String CVDistrito;
-    
+
     @Column(name = "CV_Agresion_Sexual", nullable = false)
     private String CVAgresionSexual;
 
@@ -60,43 +56,45 @@ public class Hecho {
     @Column(name = "CV_Detalles", nullable = false)
     private String CVDetalles;
 
-
-
-
+    // hecho con victima
     @ManyToOne
     @JoinColumn(name = "CI_Id_Victima", referencedColumnName = "CI_Id", nullable = false)
     private Victima victima;
 
+    // hecho con proceso judicial
+    @ManyToOne
+    @JoinColumn(name = "CI_Id_Proceso", referencedColumnName = "CI_Id", nullable = false)
+    private ProcesoJudicial procesoJudicial;
 
 
+    @Column(name = "ci_codigo_pais", nullable = false)
+    private Integer codigoPais;
 
-    public Hecho(){}
+    public Hecho() {
+    }
 
     public Hecho(Integer CI_Id, Integer CITipoVictima, Integer CITipoRelacion, Integer CIModalidad,
-                 /*Integer CIIdVictima,*/ Integer CIIdProceso, String CVAgresionSexual,
-                 String CVDenunciaPrevia, Integer CIIdGenerador, Integer CIPais, String CVProvincia,String CVCanton,
-                 String CVDistrito, String CDFecha, String CVDetalles) {
+            /* Integer CIIdVictima,  Integer CIIdProceso,*/ String CVAgresionSexual,
+            String CVDenunciaPrevia, Integer CIIdGenerador, String CVProvincia, String CVCanton,
+            String CVDistrito, String CDFecha, String CVDetalles, int codigoPais) {
         this.CI_Id = CI_Id;
-        this.CIPais = CIPais;
-        this.CVProvincia= CVProvincia;
-        this.CVCanton= CVCanton;
-        this.CVDistrito= CVDistrito;
+        this.CVProvincia = CVProvincia;
+        this.CVCanton = CVCanton;
+        this.CVDistrito = CVDistrito;
         this.CITipoVictima = CITipoVictima;
         this.CITipoRelacion = CITipoRelacion;
         this.CIModalidad = CIModalidad;
-       // this.CIIdVictima = CIIdVictima;
-        this.CIIdProceso = CIIdProceso;
+        // this.CIIdVictima = CIIdVictima;
+        //this.CIIdProceso = CIIdProceso;
         this.CVAgresionSexual = CVAgresionSexual;
         this.CVDenunciaPrevia = CVDenunciaPrevia;
         this.CIIdGenerador = CIIdGenerador;
         this.CDFecha = CDFecha;
         this.CVDetalles = CVDetalles;
+        this.codigoPais = codigoPais;
     }
 
-
-
-
-
+    //get y set de relacion de hecho con victima
     public Victima getVictima() {
         return victima;
     }
@@ -105,7 +103,14 @@ public class Hecho {
         this.victima = victima;
     }
 
+    //get y set de relacion de hecho con proceso judicial
+    public ProcesoJudicial getProcesoJudicial() {
+        return procesoJudicial;
+    }
 
+    public void setProcesoJudicial(ProcesoJudicial procesoJudicial) {
+        this.procesoJudicial = procesoJudicial;
+    }
 
 
     public String getCVDetalles() {
@@ -148,13 +153,15 @@ public class Hecho {
         this.CIIdGenerador = CIIdGenerador;
     }
 
-    /*public Integer getCIIdVictima() {
-        return CIIdVictima;
-    }
-
-    public void setCIIdVictima(Integer CIIdVictima) {
-        this.CIIdVictima = CIIdVictima;
-    }*/
+    /*
+     * public Integer getCIIdVictima() {
+     * return CIIdVictima;
+     * }
+     * 
+     * public void setCIIdVictima(Integer CIIdVictima) {
+     * this.CIIdVictima = CIIdVictima;
+     * }
+     
 
     public Integer getCIIdProceso() {
         return CIIdProceso;
@@ -163,6 +170,7 @@ public class Hecho {
     public void setCIIdProceso(Integer CIIdProceso) {
         this.CIIdProceso = CIIdProceso;
     }
+    */
 
     public Integer getCI_Id() {
         return CI_Id;
@@ -172,41 +180,31 @@ public class Hecho {
         this.CI_Id = CI_Id;
     }
 
-    public Integer getCIPais() {
-        return CIPais;
-    }
-
-    public void setCIPais(Integer CVPais) {
-        this.CIPais = CVPais;
-    }
-    
-    
-
     public String getCVProvincia() {
-		return CVProvincia;
-	}
+        return CVProvincia;
+    }
 
-	public void setCVProvincia(String cVProvincia) {
-		CVProvincia = cVProvincia;
-	}
+    public void setCVProvincia(String cVProvincia) {
+        CVProvincia = cVProvincia;
+    }
 
-	public String getCVCanton() {
-		return CVCanton;
-	}
+    public String getCVCanton() {
+        return CVCanton;
+    }
 
-	public void setCVCanton(String cVCanton) {
-		CVCanton = cVCanton;
-	}
+    public void setCVCanton(String cVCanton) {
+        CVCanton = cVCanton;
+    }
 
-	public String getCVDistrito() {
-		return CVDistrito;
-	}
+    public String getCVDistrito() {
+        return CVDistrito;
+    }
 
-	public void setCVDistrito(String cVDistrito) {
-		CVDistrito = cVDistrito;
-	}
+    public void setCVDistrito(String cVDistrito) {
+        CVDistrito = cVDistrito;
+    }
 
-	public Integer getCITipoVictima() {
+    public Integer getCITipoVictima() {
         return CITipoVictima;
     }
 
@@ -229,4 +227,14 @@ public class Hecho {
     public void setCIModalidad(Integer CIModalidad) {
         this.CIModalidad = CIModalidad;
     }
+
+    // pais
+    public Integer getCodigoPais() {
+        return this.codigoPais;
+    }
+
+    public void setCodigoPais(int codigoPais) {
+        this.codigoPais = codigoPais;
+    }
+
 }

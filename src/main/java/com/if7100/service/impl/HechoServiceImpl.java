@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-
-
+import java.util.Set;
 import java.util.stream.Collectors;////////
 
 @Service
@@ -88,7 +88,7 @@ public class HechoServiceImpl implements HechoService {
 
         for (Hecho hecho :
                 hechos) {
-            paises.add(paisesRepository.findById(hecho.getCIPais()).orElse(new Paises()));
+            paises.add(paisesRepository.findById(hecho.getCodigoPais()).orElse(new Paises()));
         }
         return paises;
     }
@@ -247,24 +247,28 @@ public List<Victima> getAllVictimasPage(Pageable pageable) {
     public List<ProcesoJudicial> getAllProcesosJudiciales() {
         List<Hecho> hechos = hechoRepository.findAll();
         List<ProcesoJudicial> procesoJudiciales = new ArrayList<>();
-        ProcesoJudicial procesoJudicial = new ProcesoJudicial();
+
         for (Hecho hecho :
                 hechos) {
-            procesoJudiciales.add(procesoJudicialRepository.findById(hecho.getCIIdProceso()).orElse(procesoJudicial));
+                    if (hecho.getProcesoJudicial() != null) {
+                        procesoJudiciales.add(hecho.getProcesoJudicial());
+                    }
         }
 
         return procesoJudiciales;
     }
-
+    
     @Override
     public List<ProcesoJudicial> getAllProcesosJudicialesPage(Pageable pageable) {
         Page<Hecho> hechos = hechoRepository.findAll(pageable);
         List<ProcesoJudicial> procesoJudiciales = new ArrayList<>();
-        ProcesoJudicial procesoJudicial = new ProcesoJudicial();
+
         for (Hecho hecho :
                 hechos) {
-            procesoJudiciales.add(procesoJudicialRepository.findById(hecho.getCIIdProceso()).orElse(procesoJudicial));
-        }
+                    if (hecho.getProcesoJudicial() != null) {
+                        procesoJudiciales.add(hecho.getProcesoJudicial());
+                    }
+                }
 
         return procesoJudiciales;
     }
@@ -288,12 +292,6 @@ public List<Victima> getAllVictimasPage(Pageable pageable) {
     @Override
     public void deleteHechoById(Integer Id) {
         hechoRepository.deleteById(Id);
-    }
-
-    //pr
-    @Override
-    public List<Hecho> getHechoByPais(Integer CIPais) {
-        return hechoRepository.findByCIPais(CIPais);
     }
 
     @Override
@@ -321,11 +319,9 @@ public List<Hecho> getHechoByVictima(Victima victima) {
     return hechoRepository.findByVictima(victima);
 }
 
-
-    
     @Override
-    public Hecho getHechoByCIIdProceso(Integer CIIdProceso) {
-        return hechoRepository.findByCIIdProceso(CIIdProceso);
+    public List<Hecho> getHechoByProcesoJudicial(ProcesoJudicial procesosJudicial) {
+        return hechoRepository.findByProcesoJudicial(procesosJudicial);
     }
 
     @Override
@@ -354,13 +350,30 @@ public List<Hecho> getHechoByVictima(Victima victima) {
 
 
 
+    @Override
+    public List<Hecho> findByCodigoPais(Integer codigoPais) {
+        return hechoRepository.findByCodigoPais(codigoPais);
+    }
 
 
 @Override
 public List<Hecho> getHechosByCodigoPaisVictima(Integer codigoPais) {
-    // Realiza la consulta en la base de datos usando el repositorio
     return hechoRepository.findHechosByVictimaCodigoPais(codigoPais);
 }
 
+@Override
+    public List<Hecho> getHechosByCodigoPaisVictimaYHecho(Integer codigoPais) {
+        // Obtiene hechos por el código de país en la tabla Hecho
+        List<Hecho> hechosPorPais = hechoRepository.findByCodigoPais(codigoPais);
+
+        // Obtiene hechos por el código de país de la víctima
+        List<Hecho> hechosPorVictima = hechoRepository.findHechosByVictimaCodigoPais(codigoPais);
+
+        // Combinar ambos resultados y elimina los duplicados
+        Set<Hecho> hechosCombinados = new HashSet<>(hechosPorPais);
+        hechosCombinados.addAll(hechosPorVictima);
+
+        return new ArrayList<>(hechosCombinados); // Convierte de nuevo a lista
+    }
 
 }

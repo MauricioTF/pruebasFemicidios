@@ -26,4 +26,6 @@ public interface ProcesoJudicialService {
  
 
  Page<ProcesoJudicial> getAllProcesosJudicialesPage(Pageable pageable);
+
+ List<ProcesoJudicial> getProcesosJudicialesByCodigoPaisUsuario(Integer codigoPaisUsuario);
 }

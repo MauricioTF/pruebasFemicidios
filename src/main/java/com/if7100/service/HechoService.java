@@ -47,9 +47,6 @@ public interface HechoService {
 
     void deleteHechoById(Integer Id);
 
-    //probando
-    List<Hecho> getHechoByPais(Integer CVPais);
-
     Hecho getHechoByTipoVictima(Integer CITipoVictima);
 
     Hecho getHechoByTipoRelacion(Integer CITipoRelacion);
@@ -59,7 +56,8 @@ public interface HechoService {
     //List<Hecho> getHechoByCIIdVictima(Integer CIIdVictima);
     List<Hecho> getHechoByVictima(Victima victima);
 
-    Hecho getHechoByCIIdProceso(Integer CIIdProceso);
+    //Hecho getHechoByCIIdProceso(Integer CIIdProceso);
+    List<Hecho> getHechoByProcesoJudicial(ProcesoJudicial procesoJudicial);
 
     Hecho getHechoByCVAgresionSexual(String CVAgresionSexual);
 
@@ -73,8 +71,10 @@ public interface HechoService {
 
 
 
+	public List<Hecho> findByCodigoPais(Integer codigoPais);
 
-    
+    //Muestra los hechos segun el codigo de pais de la victima
     List<Hecho> getHechosByCodigoPaisVictima(Integer codigoPais);
 
+    List<Hecho> getHechosByCodigoPaisVictimaYHecho(Integer codigoPais);
 }

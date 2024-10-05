@@ -59,4 +59,10 @@ public class ProcesoJudicialServiceImpl implements ProcesoJudicialService {
 	}
 	
 
+
+
+	@Override
+    public List<ProcesoJudicial> getProcesosJudicialesByCodigoPaisUsuario(Integer codigoPaisUsuario) {
+        return procesoJudicialRepository.findProcesosByCodigoPais(codigoPaisUsuario);
+    }
 }
