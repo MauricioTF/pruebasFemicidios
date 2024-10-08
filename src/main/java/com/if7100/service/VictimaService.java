@@ -30,6 +30,6 @@ public interface VictimaService
 
     Page<Victima> getAllVictimaPage(Pageable pageable);
 
-	public List<Victima> findByCodigoPais(Integer codigoPais);//obtiene los usuarios por codigo país
-
+	//obtener las victimas a partir del pais del hecho al que se relaciona
+	List<Victima> findVictimasByCodigoPaisHecho(Integer codigoPais);
 }

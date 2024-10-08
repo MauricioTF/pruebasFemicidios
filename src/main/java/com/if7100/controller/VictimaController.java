@@ -122,17 +122,16 @@ public class VictimaController {
 
 	@GetMapping("/victima/{pg}")
 	public String listVictima(Model model, @PathVariable Integer pg){
-		/*if (pg < 1){
-			return "redirect:/victima/1";
-		}*/
-
+		
 		this.validarPerfil();
 
 		// Obtener el código de país del usuario logueado
 		Integer codigoPaisUsuarioLogueado = this.usuario.getCodigoPais();
 		
 		// Filtrar Victimas por el código de país del usuario logueado
-		List<Victima> victimasFiltradas = victimaService.findByCodigoPais(codigoPaisUsuarioLogueado);
+		//List<Victima> victimasFiltradas = victimaService.findByCodigoPais(codigoPaisUsuarioLogueado);
+        List<Victima> victimasFiltradas = victimaService.findVictimasByCodigoPaisHecho(codigoPaisUsuarioLogueado);
+
 
 		int numeroTotalElementos = victimaService.getAllVictima().size();
 
@@ -183,8 +182,8 @@ public class VictimaController {
 				model.addAttribute("nivelEducativo", nivelEducativoService.getAllNivelEducativo());
 
 				// Obtener lista de países y enviarla al modelo
-				List<Paises> paises = paisesService.getAllPaises();
-				model.addAttribute("paises", paises);
+				//List<Paises> paises = paisesService.getAllPaises();
+				//model.addAttribute("paises", paises);
 				
 				bitacoraService.saveBitacora(new Bitacora(this.usuario.getCI_Id(),
 						this.usuario.getCVNombre(),this.perfil.getCVRol(),"Crea en Victima"));
@@ -239,8 +238,8 @@ public class VictimaController {
 			this.validarPerfil();
 			if(!this.perfil.getCVRol().equals("Consulta")) {
 				
-				List<Paises> paises = paisesService.getAllPaises();  // Obtiene la lista de países
-				model.addAttribute("paises", paises);  // Envía la lista de países al modelo
+				//List<Paises> paises = paisesService.getAllPaises();  // Obtiene la lista de países
+				//model.addAttribute("paises", paises);  // Envía la lista de países al modelo
 
 				//model.addAttribute("orientacionSexual",orientacionSexualService.getAllOrientacionesSexuales());
 				model.addAttribute("identidadGenero",identidadGeneroService.getAllIdentidadGenero());
@@ -267,7 +266,7 @@ public class VictimaController {
 								 Model model) {
 		
 		Victima existingVictima = victimaService.getVictimaById(id);
-		existingVictima.setCodigoPais(victima.getCodigoPais());//actualiza codigo pais
+		//existingVictima.setCodigoPais(victima.getCodigoPais());//actualiza codigo pais
 		existingVictima.setCI_Id(id);
 		existingVictima.setCVDNI(victima.getCVDNI());
 		existingVictima.setCVNombre(victima.getCVNombre());

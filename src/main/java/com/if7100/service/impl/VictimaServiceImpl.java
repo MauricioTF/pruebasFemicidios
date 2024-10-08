@@ -109,9 +109,8 @@ public class VictimaServiceImpl implements VictimaService{
 	
 	
 
-	    //obtiene los usuarios por codigo país
-    @Override
-    public List<Victima> findByCodigoPais(Integer codigoPais) {
-        return victimaRepository.findByCodigoPais(codigoPais);
+	//obtiene las victimas a partir del pais del hecho con el que se relaciona
+	public List<Victima> findVictimasByCodigoPaisHecho(Integer codigoPais) {
+        return victimaRepository.findByHechos_CodigoPais(codigoPais);
     }
 }

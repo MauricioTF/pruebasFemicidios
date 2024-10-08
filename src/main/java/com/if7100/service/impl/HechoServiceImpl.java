@@ -356,24 +356,4 @@ public List<Hecho> getHechoByVictima(Victima victima) {
     }
 
 
-@Override
-public List<Hecho> getHechosByCodigoPaisVictima(Integer codigoPais) {
-    return hechoRepository.findHechosByVictimaCodigoPais(codigoPais);
-}
-
-@Override
-    public List<Hecho> getHechosByCodigoPaisVictimaYHecho(Integer codigoPais) {
-        // Obtiene hechos por el código de país en la tabla Hecho
-        List<Hecho> hechosPorPais = hechoRepository.findByCodigoPais(codigoPais);
-
-        // Obtiene hechos por el código de país de la víctima
-        List<Hecho> hechosPorVictima = hechoRepository.findHechosByVictimaCodigoPais(codigoPais);
-
-        // Combinar ambos resultados y elimina los duplicados
-        Set<Hecho> hechosCombinados = new HashSet<>(hechosPorPais);
-        hechosCombinados.addAll(hechosPorVictima);
-
-        return new ArrayList<>(hechosCombinados); // Convierte de nuevo a lista
-    }
-
 }

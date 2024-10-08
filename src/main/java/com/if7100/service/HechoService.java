@@ -73,8 +73,5 @@ public interface HechoService {
 
 	public List<Hecho> findByCodigoPais(Integer codigoPais);
 
-    //Muestra los hechos segun el codigo de pais de la victima
-    List<Hecho> getHechosByCodigoPaisVictima(Integer codigoPais);
 
-    List<Hecho> getHechosByCodigoPaisVictimaYHecho(Integer codigoPais);
 }

@@ -136,6 +136,7 @@ public void exportToPDF(HttpServletResponse response) throws IOException, java.i
      	
 		try {
 			Usuario usuario=new Usuario();
+            
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		    String username = authentication.getName();
 		    this.usuario= new Usuario(usuarioRepository.findByCVCedula(username));
@@ -170,8 +171,7 @@ public void exportToPDF(HttpServletResponse response) throws IOException, java.i
         this.validarPerfil();
         
         Integer codigoPaisUsuario = this.usuario.getCodigoPais();
-        List<Hecho> hechosFiltrados = hechoService.getHechosByCodigoPaisVictimaYHecho(codigoPaisUsuario);
-    
+        List<Hecho> hechosFiltrados = hechoService.findByCodigoPais(codigoPaisUsuario);
 
         int numeroTotalElementos = hechosFiltrados.size();
 

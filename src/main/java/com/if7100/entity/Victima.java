@@ -1,4 +1,7 @@
 package com.if7100.entity;
+
+import java.util.List;
+
 import jakarta.persistence.Column;
 
 import jakarta.persistence.Entity;
@@ -8,7 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
 import jakarta.persistence.Id;
-
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -78,10 +81,10 @@ public class Victima {
 	
 	@Column(name="CV_Generador", nullable =false)
 	private String CVGenerador;
-	
-	@Column(name = "codigo_pais", nullable = false)
-	private Integer codigoPais;
 
+	@OneToMany(mappedBy = "victima")
+    private List<Hecho> hechos;
+	
 	public Victima() {
 		
 	}
@@ -91,7 +94,7 @@ public class Victima {
 			int cIEdad, int cVGenero, String cVLugarNac, int cVOrientaSex, String CVNacionalidad, 
 			int CIEducacion, String CVOcupacion, String CVDomicilio, String CVLugarResidencia, 
 			String CVDiscapacidad, String CVCondicionMigratoria, String CVEtnia, String CVMedidasProteccion, 
-			String CVDenunciasPrevias, int CIHijos, String CVGenerador,  int codigoPais) {
+			String CVDenunciasPrevias, int CIHijos, String CVGenerador) {
 		super();
 		
 		CVDNI = cVDNI;
@@ -113,9 +116,7 @@ public class Victima {
 		this.CVMedidasProteccion = CVMedidasProteccion;
 		this.CVDenunciasPrevias = CVDenunciasPrevias;
 		this.CIHijos = CIHijos;
-		this.CVGenerador = CVGenerador;
-		this.codigoPais = codigoPais;
-		
+		this.CVGenerador = CVGenerador;		
 		
 	}
 
@@ -401,15 +402,13 @@ public class Victima {
 		CVGenerador = cVGenerador;
 	}
 
-		// pais
-		public Integer getCodigoPais() {
-			return this.codigoPais;
-		}
+	//relacion entre victima y hechos
+	public List<Hecho> getHechos() {
+		return hechos;
+	}
 	
-		public void setCodigoPais(int codigoPais) {
-			this.codigoPais = codigoPais;
-		}
-
-	
+	public void setHechos(List<Hecho> hechos) {
+		this.hechos = hechos;
+	}
 
 }
