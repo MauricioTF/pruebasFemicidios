@@ -11,9 +11,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.if7100.entity.Dependiente;
-
+import com.if7100.entity.DependienteVictima;
 import com.if7100.entity.TipoRelacion;
+import com.if7100.entity.TipoRelacionFamiliar;
 import com.if7100.repository.DependienteRepository;
+import com.if7100.repository.DependienteVictimaRepository;
+import com.if7100.repository.TipoRelacionFamiliarRepository;
 import com.if7100.repository.TipoRelacionRepository;
 import com.if7100.service.DependienteService;
 
@@ -28,14 +31,18 @@ public class DependienteServiceImpl implements DependienteService{
 	
 	private DependienteRepository dependienteRepository;
 	
-	  private TipoRelacionRepository tipoRelacionRepository;
+	private TipoRelacionFamiliarRepository tipoRelacionFamiliarRepository;
+	private final DependienteVictimaRepository dependienteVictimaRepository;
 	
-	public DependienteServiceImpl ( DependienteRepository dependienteRepository, TipoRelacionRepository tipoRelacionRepository)
+	public DependienteServiceImpl ( DependienteRepository dependienteRepository, TipoRelacionFamiliarRepository tipoRelacionFamiliarRepository,
+	DependienteVictimaRepository dependienteVictimaRepository)
 	{
 		super();
 		this.dependienteRepository =dependienteRepository;
-	    this.tipoRelacionRepository = tipoRelacionRepository;
+	    this.tipoRelacionFamiliarRepository = tipoRelacionFamiliarRepository;
+		this.dependienteVictimaRepository = dependienteVictimaRepository;
 	}
+
 	
 	@Override
 	public List<Dependiente> getAllDependiente(){
@@ -50,26 +57,26 @@ public class DependienteServiceImpl implements DependienteService{
 	//
 	
 	@Override
-    public List<TipoRelacion> getAllTipoRelaciones() {
+    public List<TipoRelacionFamiliar> getAllTipoRelacionesFamilires() {
         List<Dependiente> dependientes = dependienteRepository.findAll();
-        List<TipoRelacion> tipoRelaciones = new ArrayList<>();
-        TipoRelacion tipoRelacion = new TipoRelacion();
+        List<TipoRelacionFamiliar> tipoRelaciones = new ArrayList<>();
+        TipoRelacionFamiliar tipoRelacionFamiliar = new TipoRelacionFamiliar();
         for (Dependiente dependiente :
         	dependientes) {
-            tipoRelaciones.add(tipoRelacionRepository.findById(dependiente.getCI_Tiporelacion()).orElse(tipoRelacion));
+            tipoRelaciones.add(tipoRelacionFamiliarRepository.findById(dependiente.getCI_Tiporelacion()).orElse(tipoRelacionFamiliar));
         }
 
         return tipoRelaciones;
     }
 
     @Override
-    public List<TipoRelacion> getAllTipoRelacionesPage(Pageable pageable){
+    public List<TipoRelacionFamiliar> getAllTipoRelacionesFamiliaresPage(Pageable pageable){
         Page<Dependiente> dependientes = dependienteRepository.findAll(pageable);
-        List<TipoRelacion> tipoRelaciones = new ArrayList<>();
-        TipoRelacion tipoRelacion = new TipoRelacion();
+        List<TipoRelacionFamiliar> tipoRelaciones = new ArrayList<>();
+        TipoRelacionFamiliar tipoRelacionFamiliar = new TipoRelacionFamiliar();
         for (Dependiente dependiente :
         	dependientes) {
-            tipoRelaciones.add(tipoRelacionRepository.findById(dependiente.getCI_Tiporelacion()).orElse(tipoRelacion));
+            tipoRelaciones.add(tipoRelacionFamiliarRepository.findById(dependiente.getCI_Tiporelacion()).orElse(tipoRelacionFamiliar));
         }
         return tipoRelaciones;
     }
@@ -105,5 +112,10 @@ public class DependienteServiceImpl implements DependienteService{
 	}
 	
 	
+
+	@Override
+    public void saveDependienteVictima(DependienteVictima dependienteVictima) {
+        dependienteVictimaRepository.save(dependienteVictima);
+    }
 
 }

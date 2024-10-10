@@ -79,9 +79,11 @@ C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\c
 C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\com\if7100\controller\HechoOrganismoController.java
 C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\com\if7100\repository\VictimaRepository.java
 C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\com\if7100\service\impl\PaisesServiceImpl.java
+C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\com\if7100\repository\DependienteVictimaRepository.java
 C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\com\if7100\repository\OrganismoRepository.java
 C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\com\if7100\entity\TipoLugar.java
 C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\com\if7100\service\impl\ProcesoJudicialServiceImpl.java
+C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\com\if7100\service\DependienteVictimaService.java
 C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\com\if7100\entity\TipoRelacionFamiliar.java
 C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\com\if7100\service\impl\TipoLugarServiceImpl.java
 C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\com\if7100\service\impl\TipoOrganismoServiceImpl.java
@@ -97,6 +99,7 @@ C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\c
 C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\com\if7100\service\impl\VictimaServiceImpl.java
 C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\com\if7100\entity\Usuario.java
 C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\com\if7100\service\impl\HechoServiceImpl.java
+C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\com\if7100\service\impl\DependienteVictimaServiceImpl.java
 C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\com\if7100\service\impl\TipoVictimaServiceImpl.java
 C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\com\if7100\repository\TipoRelacionFamiliarRepository.java
 C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\com\if7100\repository\PaisesRepository.java
@@ -123,4 +126,5 @@ C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\c
 C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\com\if7100\service\LugarService.java
 C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\com\if7100\service\OrientacionSexualService.java
 C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\com\if7100\controller\VictimaController.java
+C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\com\if7100\entity\DependienteVictima.java
 C:\Users\torre\Desktop\Poder judicial\proyecto\pruebasFemicidios\src\main\java\com\if7100\controller\RedireccionController.java

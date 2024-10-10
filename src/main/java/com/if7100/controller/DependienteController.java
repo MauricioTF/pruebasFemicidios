@@ -6,6 +6,9 @@ package com.if7100.controller;
 import com.if7100.entity.*;
 import com.if7100.service.BitacoraService;
 import com.if7100.service.DependienteService;
+import com.if7100.service.DependienteVictimaService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,9 +20,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.if7100.service.PerfilService;
-import com.if7100.service.TipoRelacionService;
+import com.if7100.service.TipoRelacionFamiliarService;
+import com.if7100.service.VictimaService;
 
 /**
  * @author Hadji
@@ -34,7 +39,9 @@ import java.util.stream.IntStream;
 
 @Controller
 public class DependienteController {
-	
+	@Autowired
+	private DependienteVictimaService dependienteVictimaService;
+
 	private DependienteService dependienteService;
 	
 	//instancias para control de acceso
@@ -43,22 +50,24 @@ public class DependienteController {
     private PerfilService perfilService;
   //instancias para control de bitacora
     private BitacoraService bitacoraService;
+	private VictimaService victimaService;
+
     private Usuario usuario;
 
   //Instancias el control de Nivel educativo
-    private TipoRelacion tipoRelacion;
-    private TipoRelacionService tipoRelacionService;
+    private TipoRelacionFamiliarService tipoRelacionFamiliarService;
 
 	//Constructor con todos las instancias
 	public DependienteController(DependienteService dependienteService, UsuarioRepository usuarioRepository,
-			PerfilService perfilService, BitacoraService bitacoraService, TipoRelacionService tipoRelacionService) {
+			PerfilService perfilService, BitacoraService bitacoraService, TipoRelacionFamiliarService tipoRelacionFamiliarService,
+			VictimaService victimaservice) {
 		super();
 		this.dependienteService = dependienteService;
 		this.usuarioRepository = usuarioRepository;
 		this.perfilService = perfilService;
 		this.bitacoraService = bitacoraService;
-		this.tipoRelacionService = tipoRelacionService;
-	
+		this.tipoRelacionFamiliarService = tipoRelacionFamiliarService;
+		this.victimaService = victimaservice;
 	}
 
 
@@ -95,8 +104,7 @@ public class DependienteController {
 	
 	  private void modelAttributes(Model model) {
 	    
-	        model.addAttribute("tipoRelacion", tipoRelacionService.getAllTipoRelaciones());
-	    
+	        model.addAttribute("tipoRelacionFamiliar", tipoRelacionFamiliarService.getAllTipoRelacionFamiliar());
 	    }
 
 	
@@ -127,7 +135,7 @@ public class DependienteController {
 		model.addAttribute("PaginaActual", pg);
 		model.addAttribute("nPaginas", nPaginas);
 		model.addAttribute("dependiente", dependientePage.getContent());
-		  model.addAttribute("tipoRelaciones", dependienteService.getAllTipoRelacionesPage(pageable));
+		  model.addAttribute("tipoRelacionesFamiliares", dependienteService.getAllTipoRelacionesFamiliaresPage(pageable));
 		return "dependientes/dependiente";
 	}
 	
@@ -140,8 +148,11 @@ public class DependienteController {
 				
 				Dependiente dependiente = new Dependiente();
 				
-				//model.addAttribute("orientacionSexual",orientacionSexualService.getAllOrientacionesSexuales());
 			
+				 // Obtener todas las víctimas y agregarlas al modelo
+				 List<Victima> victimas = victimaService.getAllVictima();
+				 model.addAttribute("victimas", victimas);
+
 				model.addAttribute("dependiente", dependiente);
 				 modelAttributes(model);
 				bitacoraService.saveBitacora(new Bitacora(this.usuario.getCI_Id(),
@@ -158,11 +169,36 @@ public class DependienteController {
 	
 	
 	@PostMapping("/dependientes")
-	public String saveDependiente (@ModelAttribute("dependiente") Dependiente dependiente) {
-		
-		dependienteService.saveDependiente(dependiente);
-		return "redirect:/dependientes";
-	}
+public String saveDependiente (@ModelAttribute("dependiente") Dependiente dependiente, 
+                              @RequestParam("victima") Integer idVictima, 
+                              Model model ) {
+    // Buscar la víctima seleccionada por su ID
+    Victima victima = victimaService.getVictimaById(idVictima);
+    
+    if (victima != null) {
+        // Guardar el dependiente
+        dependienteService.saveDependiente(dependiente);
+
+        // Crear la entidad DependienteVictima y asociarla con el dependiente y la víctima
+        DependienteVictima dependienteVictima = new DependienteVictima();
+        dependienteVictima.setDependiente(dependiente);
+        dependienteVictima.setVictima(victima);
+
+        // Guardar la relación en la base de datos (asegúrate de tener un servicio para esto)
+        dependienteService.saveDependienteVictima(dependienteVictima);
+
+        // Guardar en la bitácora
+        bitacoraService.saveBitacora(new Bitacora(this.usuario.getCI_Id(),
+            this.usuario.getCVNombre(), this.perfil.getCVRol(), "Crea Dependiente con asociación a víctima"));
+
+    } else {
+        // Manejar el caso en que la víctima no exista
+        model.addAttribute("error", "La víctima seleccionada no es válida.");
+        return "dependientes/create_dependiente";
+    }
+
+    return "redirect:/dependientes";
+}
 	
 	@GetMapping("/dependientes/{Id}")
 	public String deleteDependiente(@PathVariable Integer Id) {
@@ -195,9 +231,7 @@ public class DependienteController {
 		try {
 			this.validarPerfil();
 			if(!this.perfil.getCVRol().equals("Consulta")) {
-				
-			//	model.addAttribute("orientacionSexual",orientacionSexualService.getAllOrientacionesSexuales());
-			
+							
 				model.addAttribute("dependiente", dependienteService.getDependienteById(id));
 				
 				 modelAttributes(model);
@@ -220,7 +254,8 @@ public class DependienteController {
 		Dependiente existingDependiente = dependienteService.getDependienteById(id);
 		existingDependiente.setCI_Codigo(id);
 		existingDependiente.setCVDNI(dependiente.getCVDNI());
-	
+		    // Aquí actualizas el tipo de relación familiar
+		existingDependiente.setCI_Tiporelacion(dependiente.getCI_Tiporelacion());
 
 		
 		dependienteService.updateDependiente(existingDependiente);

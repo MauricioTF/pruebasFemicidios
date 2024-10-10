@@ -21,13 +21,13 @@ public class TipoRelacionFamiliarServImpl implements TipoRelacionFamiliarService
 
 	@Override
 	public List<TipoRelacionFamiliar> getAllTipoRelacionFamiliar() {
-		// TODO Auto-generated method stub
+		
 		return tipoRelacionFamiliarRepository.findAll();
 	}
 
 	@Override
 	public Page<TipoRelacionFamiliar> getAllTipoRelacionFamiliar(Pageable pageable) {
-		// TODO Auto-generated method stub
+
 		return tipoRelacionFamiliarRepository.findAll(pageable);
 	}
 

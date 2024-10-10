@@ -93,7 +93,6 @@ com\if7100\entity\Modalidad.class
 com\if7100\service\impl\ImputadoServiceImpl.class
 com\if7100\repository\OrganismoRepository.class
 com\if7100\repository\DependienteRepository.class
-com\if7100\controller\DependienteController.class
 com\if7100\entity\HechoOrganismo.class
 com\if7100\controller\TipoOrganismoController.class
 com\if7100\service\OrientacionSexualService.class

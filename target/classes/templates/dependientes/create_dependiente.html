@@ -25,16 +25,31 @@
                        </div>
                        
                        <div class="col">
-                        <div class="mb-3 mx-3"><label class="form-label" for="name">Seleccione el tipo de relacion del dependiente
-                        </label><select th:name="tipoRelacion" th:field="*{CI_Tiporelacion}"
+                        <div class="mb-3 mx-3"><label class="form-label" for="name">Seleccione el tipo de relacion familiar del dependiente
+                        </label><select th:name="tipoRelacionFamiliar" th:field="*{CI_Tiporelacion}"
                                                       onfocus="ocultarError()" id="name-2" class="form-select" required>
                             <optgroup label="Relacion del dependiente">
-                                <option th:each="tipoRelacion: ${tipoRelacion}" th:value="${tipoRelacion.CI_Codigo}"
-                                        th:text="${tipoRelacion.CI_Codigo} + ' - ' + ${tipoRelacion.CVTitulo}"></option>
+                                <option th:each="relacionFamiliar: ${tipoRelacionFamiliar}" th:value="${relacionFamiliar.CI_Codigo}"
+                                        th:text="${relacionFamiliar.CI_Codigo} + ' - ' + ${relacionFamiliar.nombre}"></option>
                             </optgroup>
                         </select></div>
                     </div>
                  
+                    <div class="col">
+                        <div class="mb-3 mx-3"><label class="form-label" for="name">Seleccione la victima
+                        </label>
+                        <select id="victima" name="victima" required>
+                            <option value="" disabled selected>Seleccione una víctima</option>
+                            <!-- Iterar sobre las víctimas y mostrarlas como opciones -->
+                            <th:block th:each="victima : ${victimas}">
+                                <option th:value="${victima.CI_Id}" th:text="${victima.CVNombre}"></option>
+                            </th:block>
+                        </select>
+
+                        </div>
+                    </div>
+  
+
                 </div>
                 <div class="row align-items-end">
                     <div class="w-100"></div>

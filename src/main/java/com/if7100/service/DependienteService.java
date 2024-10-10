@@ -3,7 +3,8 @@ package com.if7100.service;
 import java.util.List;
 
 import com.if7100.entity.Dependiente;
-import com.if7100.entity.TipoRelacion;
+import com.if7100.entity.DependienteVictima;
+import com.if7100.entity.TipoRelacionFamiliar;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,7 +12,8 @@ import org.springframework.data.domain.Pageable;
 
 public interface DependienteService
 {
-		
+	void saveDependienteVictima(DependienteVictima dependienteVictima);
+
 	List<Dependiente> getAllDependiente();
 	
 	Dependiente saveDependiente(Dependiente dependiente);
@@ -20,9 +22,9 @@ public interface DependienteService
 	
 	Dependiente updateDependiente(Dependiente dependiente);
 	
-	 List<TipoRelacion> getAllTipoRelaciones();
+	 List<TipoRelacionFamiliar> getAllTipoRelacionesFamilires();
 
-	  List<TipoRelacion> getAllTipoRelacionesPage(Pageable pageable);
+	  List<TipoRelacionFamiliar> getAllTipoRelacionesFamiliaresPage(Pageable pageable);
 	
 	void deleteDependienteById(Integer Id);
 

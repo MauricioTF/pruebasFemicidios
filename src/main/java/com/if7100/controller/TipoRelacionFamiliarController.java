@@ -78,6 +78,7 @@ public class TipoRelacionFamiliarController {
 		int tamanoPagina = (int) Math.ceil(numeroTotalElementos / (double) paginasDeseadas);
 		return PageRequest.of(numeroPagina, tamanoPagina);
 	}
+	
 	@GetMapping("/tiporelacionfamiliar")
 	public String listTipoRelacionFamiliar(Model model) {
 //		model.addAttribute("identidadgenero", identidadGeneroService.getAllIdentidadGenero());
@@ -105,6 +106,7 @@ public class TipoRelacionFamiliarController {
 		model.addAttribute("tiporelacionfamiliar", tipoRelacionFamiliarPage.getContent());
 		return "tipoRelacionFamiliar/tiporelacionfamiliar";
 	}
+	
 	@GetMapping("/tiporelacionfamiliar/new")
 	public String createTiporelacionfamiliar(Model model) {
 
