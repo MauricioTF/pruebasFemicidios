@@ -1,4 +1,7 @@
 package com.if7100.entity;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 
 import jakarta.persistence.Entity;
@@ -8,7 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
 import jakarta.persistence.Id;
-
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -24,7 +27,7 @@ public class Dependiente {
 	
 	@Column(name="CI_Tiporelacion", nullable =false)
 	private int CI_Tiporelacion;
-	
+
 	public Dependiente(  ) {}
 
 	public Dependiente(int cI_Codigo, String cVDNI, int cI_Tiporelacion) {
@@ -57,7 +60,5 @@ public class Dependiente {
 	public void setCI_Tiporelacion(int cI_Tiporelacion) {
 		CI_Tiporelacion = cI_Tiporelacion;
 	}
-	
-	
 
 }

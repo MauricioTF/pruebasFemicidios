@@ -18,11 +18,11 @@ public class DependienteVictima {
     private Integer CI_Id_DependienteVictima;
 
     @ManyToOne
-    @JoinColumn(name = "CI_ID_Victima")
+    @JoinColumn(name = "CI_ID_Victima", referencedColumnName = "CI_Id")
     private Victima victima;
 
     @ManyToOne
-    @JoinColumn(name = "CI_Codigo_Dependiente")
+    @JoinColumn(name = "CI_Codigo_Dependiente", referencedColumnName = "CI_Codigo")
     private Dependiente dependiente;
 
     public DependienteVictima(){}

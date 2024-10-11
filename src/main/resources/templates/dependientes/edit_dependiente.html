@@ -36,6 +36,23 @@
                         </select></div>
                     </div>
 					
+
+
+					<div class="col">
+                        <div class="mb-3 mx-3"><label class="form-label" for="name">Seleccione la victima
+                        </label>
+                        <select id="victima" name="victima" required>
+                            <option value="" disabled selected>Seleccione una víctima</option>
+                            <!-- Iterar sobre las víctimas y mostrarlas como opciones -->
+                            <th:block th:each="victima : ${victimas}">
+                                <option th:value="${victima.CI_Id}" th:text="${victima.CVNombre}"></option>
+                            </th:block>
+                        </select>
+
+                        </div>
+                    </div>
+
+					
 				</div>
 				<div class="row align-items-end">
 					<div class="w-100"></div>

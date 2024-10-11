@@ -25,12 +25,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.if7100.service.PerfilService;
 import com.if7100.service.TipoRelacionFamiliarService;
 import com.if7100.service.VictimaService;
+import com.if7100.repository.DependienteVictimaRepository;
 
 /**
  * @author Hadji
  *
  */
-
 
 import com.if7100.repository.UsuarioRepository;
 
@@ -43,23 +43,25 @@ public class DependienteController {
 	private DependienteVictimaService dependienteVictimaService;
 
 	private DependienteService dependienteService;
-	
-	//instancias para control de acceso
-    private UsuarioRepository usuarioRepository;
-    private Perfil perfil;
-    private PerfilService perfilService;
-  //instancias para control de bitacora
-    private BitacoraService bitacoraService;
+	private DependienteVictimaRepository dependienteVictimaRepository;
+
+	// instancias para control de acceso
+	private UsuarioRepository usuarioRepository;
+	private Perfil perfil;
+	private PerfilService perfilService;
+	// instancias para control de bitacora
+	private BitacoraService bitacoraService;
 	private VictimaService victimaService;
 
-    private Usuario usuario;
+	private Usuario usuario;
 
-  //Instancias el control de Nivel educativo
-    private TipoRelacionFamiliarService tipoRelacionFamiliarService;
+	// Instancias el control de Nivel educativo
+	private TipoRelacionFamiliarService tipoRelacionFamiliarService;
 
-	//Constructor con todos las instancias
+	// Constructor con todos las instancias
 	public DependienteController(DependienteService dependienteService, UsuarioRepository usuarioRepository,
-			PerfilService perfilService, BitacoraService bitacoraService, TipoRelacionFamiliarService tipoRelacionFamiliarService,
+			PerfilService perfilService, BitacoraService bitacoraService,
+			TipoRelacionFamiliarService tipoRelacionFamiliarService,
 			VictimaService victimaservice) {
 		super();
 		this.dependienteService = dependienteService;
@@ -70,46 +72,39 @@ public class DependienteController {
 		this.victimaService = victimaservice;
 	}
 
-
-	
 	private void validarPerfil() {
-    	
+
 		try {
-			Usuario usuario=new Usuario();
+			Usuario usuario = new Usuario();
 
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		    String username = authentication.getName();
-		    this.usuario= new Usuario(usuarioRepository.findByCVCedula(username));
+			String username = authentication.getName();
+			this.usuario = new Usuario(usuarioRepository.findByCVCedula(username));
 
-			this.perfil = new Perfil(perfilService.getPerfilById(usuarioRepository.findByCVCedula(username).getCIPerfil()));
-			
-		}catch (Exception e) {
+			this.perfil = new Perfil(
+					perfilService.getPerfilById(usuarioRepository.findByCVCedula(username).getCIPerfil()));
+
+		} catch (Exception e) {
 			// TODO: handle exception
 		}
 	}
 
-	private Pageable initPages(int pg, int paginasDeseadas, int numeroTotalElementos){
-		int numeroPagina = pg-1;
-		if (numeroTotalElementos < 10){
+	private Pageable initPages(int pg, int paginasDeseadas, int numeroTotalElementos) {
+		int numeroPagina = pg - 1;
+		if (numeroTotalElementos < 10) {
 			paginasDeseadas = 1;
 		}
-		if (numeroTotalElementos < 1){
+		if (numeroTotalElementos < 1) {
 			numeroTotalElementos = 1;
 		}
 		int tamanoPagina = (int) Math.ceil(numeroTotalElementos / (double) paginasDeseadas);
 		return PageRequest.of(numeroPagina, tamanoPagina);
 	}
-	
-	
-	
-	  private void modelAttributes(Model model) {
-	    
-	        model.addAttribute("tipoRelacionFamiliar", tipoRelacionFamiliarService.getAllTipoRelacionFamiliar());
-	    }
 
-	
-	
-	
+	private void modelAttributes(Model model) {
+
+		model.addAttribute("tipoRelacionFamiliar", tipoRelacionFamiliarService.getAllTipoRelacionFamiliar());
+	}
 
 	@GetMapping("/dependientes")
 	public String listdependientes(Model model) {
@@ -117,8 +112,8 @@ public class DependienteController {
 	}
 
 	@GetMapping("/dependiente/{pg}")
-	public String listdependiente(Model model, @PathVariable Integer pg){
-		if (pg < 1){
+	public String listdependiente(Model model, @PathVariable Integer pg) {
+		if (pg < 1) {
 			return "redirect:/dependiente/1";
 		}
 
@@ -128,143 +123,145 @@ public class DependienteController {
 
 		Page<Dependiente> dependientePage = dependienteService.getAllDependientePage(pageable);
 
-		List<Integer> nPaginas = IntStream.rangeClosed(1,dependientePage.getTotalPages())
+		List<Integer> nPaginas = IntStream.rangeClosed(1, dependientePage.getTotalPages())
 				.boxed()
 				.toList();
 
 		model.addAttribute("PaginaActual", pg);
 		model.addAttribute("nPaginas", nPaginas);
 		model.addAttribute("dependiente", dependientePage.getContent());
-		  model.addAttribute("tipoRelacionesFamiliares", dependienteService.getAllTipoRelacionesFamiliaresPage(pageable));
+		model.addAttribute("tipoRelacionesFamiliares", dependienteService.getAllTipoRelacionesFamiliaresPage(pageable));
 		return "dependientes/dependiente";
 	}
-	
+
 	@GetMapping("/dependientes/new")
-	public String createdependienteForm (Model model) {
-		
+	public String createdependienteForm(Model model) {
+
 		try {
 			this.validarPerfil();
-			if(!this.perfil.getCVRol().equals("Consulta")) {
-				
+			if (!this.perfil.getCVRol().equals("Consulta")) {
+
 				Dependiente dependiente = new Dependiente();
-				
-			
-				 // Obtener todas las víctimas y agregarlas al modelo
-				 List<Victima> victimas = victimaService.getAllVictima();
-				 model.addAttribute("victimas", victimas);
+
+				// Obtener todas las víctimas y agregarlas al modelo
+				List<Victima> victimas = victimaService.getAllVictima();
+				model.addAttribute("victimas", victimas);
 
 				model.addAttribute("dependiente", dependiente);
-				 modelAttributes(model);
+				modelAttributes(model);
 				bitacoraService.saveBitacora(new Bitacora(this.usuario.getCI_Id(),
-						this.usuario.getCVNombre(),this.perfil.getCVRol(),"Crea en Dependiente"));
+						this.usuario.getCVNombre(), this.perfil.getCVRol(), "Crea en Dependiente"));
 				return "dependientes/create_dependiente";
-			}else {
+			} else {
 				return "SinAcceso";
 			}
-			
-		}catch (Exception e) {
+
+		} catch (Exception e) {
 			return "SinAcceso";
 		}
 	}
-	
-	
+
 	@PostMapping("/dependientes")
-public String saveDependiente (@ModelAttribute("dependiente") Dependiente dependiente, 
-                              @RequestParam("victima") Integer idVictima, 
-                              Model model ) {
-    // Buscar la víctima seleccionada por su ID
-    Victima victima = victimaService.getVictimaById(idVictima);
-    
-    if (victima != null) {
-        // Guardar el dependiente
-        dependienteService.saveDependiente(dependiente);
+	public String saveDependiente(@ModelAttribute("dependiente") Dependiente dependiente,
+			@RequestParam("victima") Integer idVictima,
+			Model model) {
 
-        // Crear la entidad DependienteVictima y asociarla con el dependiente y la víctima
-        DependienteVictima dependienteVictima = new DependienteVictima();
-        dependienteVictima.setDependiente(dependiente);
-        dependienteVictima.setVictima(victima);
+		Victima victima = victimaService.getVictimaById(idVictima);
 
-        // Guardar la relación en la base de datos (asegúrate de tener un servicio para esto)
-        dependienteService.saveDependienteVictima(dependienteVictima);
+		if (victima != null) {
 
-        // Guardar en la bitácora
-        bitacoraService.saveBitacora(new Bitacora(this.usuario.getCI_Id(),
-            this.usuario.getCVNombre(), this.perfil.getCVRol(), "Crea Dependiente con asociación a víctima"));
+			dependienteService.saveDependiente(dependiente);
 
-    } else {
-        // Manejar el caso en que la víctima no exista
-        model.addAttribute("error", "La víctima seleccionada no es válida.");
-        return "dependientes/create_dependiente";
-    }
+			DependienteVictima dependienteVictima = new DependienteVictima();
+			dependienteVictima.setDependiente(dependiente);
+			dependienteVictima.setVictima(victima);
 
-    return "redirect:/dependientes";
-}
-	
+			dependienteService.saveDependienteVictima(dependienteVictima);
+
+			bitacoraService.saveBitacora(new Bitacora(this.usuario.getCI_Id(),
+					this.usuario.getCVNombre(), this.perfil.getCVRol(), "Crea Dependiente con asociación a víctima"));
+
+		} else {
+			model.addAttribute("error", "La víctima seleccionada no es válida.");
+			return "dependientes/create_dependiente";
+		}
+
+		return "redirect:/dependientes";
+	}
+
 	@GetMapping("/dependientes/{Id}")
 	public String deleteDependiente(@PathVariable Integer Id) {
-		
+
 		try {
 			this.validarPerfil();
-			if(!this.perfil.getCVRol().equals("Consulta")) {
-				
+			if (!this.perfil.getCVRol().equals("Consulta")) {
+
 				String descripcion = "Elimino un dependiente(familiar)";
-				Bitacora bitacora = new Bitacora(this.usuario.getCI_Id(), this.usuario.getCVNombre(), descripcion, this.perfil.getCVRol());
+				Bitacora bitacora = new Bitacora(this.usuario.getCI_Id(), this.usuario.getCVNombre(), descripcion,
+						this.perfil.getCVRol());
 				bitacoraService.saveBitacora(bitacora);
-				
+
+				dependienteVictimaService.deleteByDependienteId(Id);
+
 				dependienteService.deleteDependienteById(Id);
+
 				bitacoraService.saveBitacora(new Bitacora(this.usuario.getCI_Id(),
-						this.usuario.getCVNombre(),this.perfil.getCVRol(),"Eliminó en Denpendiente(familiar)"));
+						this.usuario.getCVNombre(), this.perfil.getCVRol(), "Eliminó en Denpendiente(familiar)"));
 				return "redirect:/dependientes";
-			}else {
+			} else {
 				return "SinAcceso";
 			}
-			
-		}catch (Exception e) {
+
+		} catch (Exception e) {
 			return "SinAcceso";
 		}
 	}
-	
-	
+
 	@GetMapping("/dependientes/edit/{id}")
-	public String editdependienteForm (@PathVariable Integer id, Model model) {
-		
+	public String editdependienteForm(@PathVariable Integer id, Model model) {
+
 		try {
 			this.validarPerfil();
-			if(!this.perfil.getCVRol().equals("Consulta")) {
-							
+			if (!this.perfil.getCVRol().equals("Consulta")) {
+
 				model.addAttribute("dependiente", dependienteService.getDependienteById(id));
 				
-				 modelAttributes(model);
+				 // Obtener las víctimas asociadas al dependiente a través de la relación en DependienteVictima
+				 List<DependienteVictima> dependienteVictimas = dependienteVictimaService.findBydependiente(id);
+    
+				 // Agregar las víctimas al modelo para pasarlas a la vista
+				 model.addAttribute("dependienteVictimas", dependienteVictimas);
+
+				modelAttributes(model);
 				return "dependientes/edit_dependiente";
-			}else {
+			} else {
 				return "SinAcceso";
 			}
-			
-		}catch (Exception e) {
+
+		} catch (Exception e) {
+			e.printStackTrace();
+    		System.out.println("Error al actualizar: " + e.getMessage());
 			return "SinAcceso";
-		}	
+		}
 	}
-	
-	
+
 	@PostMapping("/dependientes/{id}")
-	public String updatedependiente (@PathVariable Integer id, 
-								 @ModelAttribute("dependiente") Dependiente dependiente,
-								 Model model) {
-		
+	public String updatedependiente(@PathVariable Integer id,
+			@ModelAttribute("dependiente") Dependiente dependiente,
+			Model model) {
+
 		Dependiente existingDependiente = dependienteService.getDependienteById(id);
 		existingDependiente.setCI_Codigo(id);
 		existingDependiente.setCVDNI(dependiente.getCVDNI());
-		    // Aquí actualizas el tipo de relación familiar
-		existingDependiente.setCI_Tiporelacion(dependiente.getCI_Tiporelacion());
 
-		
 		dependienteService.updateDependiente(existingDependiente);
-		
+
+
 		bitacoraService.saveBitacora(new Bitacora(this.usuario.getCI_Id(),
-				 this.usuario.getCVNombre(),this.perfil.getCVRol(),"Actualizó en Dependiente"));
-		 
+				this.usuario.getCVNombre(), this.perfil.getCVRol(), "Actualizó en Dependiente"));
+
 		return "redirect:/dependientes";
-		
+
 	}
-	
+
 }

@@ -20,7 +20,7 @@ public interface DependienteService
 	
 	Dependiente getDependienteById(Integer Id);
 	
-	Dependiente updateDependiente(Dependiente dependiente);
+	void updateDependiente(Dependiente dependiente);//
 	
 	 List<TipoRelacionFamiliar> getAllTipoRelacionesFamilires();
 

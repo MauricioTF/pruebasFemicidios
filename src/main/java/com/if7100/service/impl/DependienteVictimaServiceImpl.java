@@ -6,6 +6,8 @@ import com.if7100.entity.DependienteVictima;
 import com.if7100.repository.DependienteVictimaRepository;
 import com.if7100.service.DependienteVictimaService;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class DependienteVictimaServiceImpl implements DependienteVictimaService {
 
@@ -33,5 +35,15 @@ public class DependienteVictimaServiceImpl implements DependienteVictimaService 
     @Override
     public void deleteDependienteVictimaById(Integer id) {
         dependienteVictimaRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void deleteByDependienteId(Integer dependienteId) {
+        dependienteVictimaRepository.deleteByDependienteId(dependienteId);
+    }
+
+    public List<DependienteVictima> findBydependiente(Integer dependienteId) {
+        return dependienteVictimaRepository.findBydependiente(dependienteId);
     }
 }

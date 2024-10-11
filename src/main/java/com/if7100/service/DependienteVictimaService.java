@@ -13,4 +13,9 @@ public interface DependienteVictimaService {
     DependienteVictima saveDependienteVictima(DependienteVictima dependienteVictima);
     
     void deleteDependienteVictimaById(Integer id);
+
+    void deleteByDependienteId(Integer dependienteId);
+
+    public List<DependienteVictima> findBydependiente(Integer dependienteId);
+
 }

@@ -20,6 +20,8 @@ import com.if7100.repository.TipoRelacionFamiliarRepository;
 import com.if7100.repository.TipoRelacionRepository;
 import com.if7100.service.DependienteService;
 
+import jakarta.transaction.Transactional;
+
 /**
  * @author Hadji
  *
@@ -96,13 +98,14 @@ public class DependienteServiceImpl implements DependienteService{
 		return dependienteRepository.findById(Id).get(); 
 	}
 	
-	@Override
+	/*@Override
 	public Dependiente updateDependiente (Dependiente dependiente){
 		return dependienteRepository.save(dependiente); 
-	}
+	}*/
 	
 	@Override
 	public void deleteDependienteById(Integer Id){
+		
 		dependienteRepository.deleteById(Id); 
 	}
 	
@@ -118,4 +121,18 @@ public class DependienteServiceImpl implements DependienteService{
         dependienteVictimaRepository.save(dependienteVictima);
     }
 
+
+    @Override
+    public void updateDependiente(Dependiente dependiente) {
+        // Guardar el dependiente actualizado
+        dependienteRepository.save(dependiente);
+
+        // Obtener y actualizar las relaciones DependienteVictima
+        List<DependienteVictima> dependienteVictimaList = dependienteVictimaRepository.findBydependiente(dependiente.getCI_Codigo());
+        
+        for (DependienteVictima dependienteVictima : dependienteVictimaList) {
+            dependienteVictima.setDependiente(dependiente); // Actualizar la relación dependiente
+            dependienteVictimaRepository.save(dependienteVictima);
+        }
+    }
 }
