@@ -30,9 +30,9 @@ public class Dependiente {
 
 	public Dependiente(  ) {}
 
-	public Dependiente(int cI_Codigo, String cVDNI, int cI_Tiporelacion) {
+	public Dependiente(int CI_Codigo, String cVDNI, int cI_Tiporelacion) {
 		super();
-		CI_Codigo = cI_Codigo;
+		this.CI_Codigo = CI_Codigo;
 		CVDNI = cVDNI;
 		CI_Tiporelacion = cI_Tiporelacion;
 	}
@@ -41,8 +41,8 @@ public class Dependiente {
 		return CI_Codigo;
 	}
 
-	public void setCI_Codigo(int cI_Codigo) {
-		CI_Codigo = cI_Codigo;
+	public void setCI_Codigo(int CI_Codigo) {
+		this.CI_Codigo = CI_Codigo;
 	}
 
 	public String getCVDNI() {

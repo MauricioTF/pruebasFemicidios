@@ -165,6 +165,7 @@ public class DependienteController {
 	public String saveDependiente(@ModelAttribute("dependiente") Dependiente dependiente,
 			@RequestParam("victima") Integer idVictima,
 			Model model) {
+				
 
 		Victima victima = victimaService.getVictimaById(idVictima);
 
@@ -226,11 +227,9 @@ public class DependienteController {
 
 				model.addAttribute("dependiente", dependienteService.getDependienteById(id));
 				
-				 // Obtener las víctimas asociadas al dependiente a través de la relación en DependienteVictima
-				 List<DependienteVictima> dependienteVictimas = dependienteVictimaService.findBydependiente(id);
-    
-				 // Agregar las víctimas al modelo para pasarlas a la vista
-				 model.addAttribute("dependienteVictimas", dependienteVictimas);
+				 // Obtener todas las víctimas y agregarlas al modelo
+				List<Victima> victimas = victimaService.getAllVictima();
+				model.addAttribute("victimas", victimas);
 
 				modelAttributes(model);
 				return "dependientes/edit_dependiente";
@@ -247,7 +246,7 @@ public class DependienteController {
 
 	@PostMapping("/dependientes/{id}")
 	public String updatedependiente(@PathVariable Integer id,
-			@ModelAttribute("dependiente") Dependiente dependiente,
+			@ModelAttribute("dependiente") Dependiente dependiente,@RequestParam("victima") Integer idVictima,
 			Model model) {
 
 		Dependiente existingDependiente = dependienteService.getDependienteById(id);
@@ -256,6 +255,13 @@ public class DependienteController {
 
 		dependienteService.updateDependiente(existingDependiente);
 
+		Victima victima = victimaService.getVictimaById(idVictima);
+
+		DependienteVictima existingDependienteVictima = dependienteVictimaService.findBydependiente(existingDependiente).get(0);
+		existingDependienteVictima.setDependiente(existingDependiente);
+		existingDependienteVictima.setVictima(victima);
+
+		dependienteService.updateDependienteVictima(existingDependienteVictima);
 
 		bitacoraService.saveBitacora(new Bitacora(this.usuario.getCI_Id(),
 				this.usuario.getCVNombre(), this.perfil.getCVRol(), "Actualizó en Dependiente"));

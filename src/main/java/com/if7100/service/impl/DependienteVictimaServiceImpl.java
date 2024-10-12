@@ -2,6 +2,7 @@ package com.if7100.service.impl;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
+import com.if7100.entity.Dependiente;
 import com.if7100.entity.DependienteVictima;
 import com.if7100.repository.DependienteVictimaRepository;
 import com.if7100.service.DependienteVictimaService;
@@ -43,7 +44,7 @@ public class DependienteVictimaServiceImpl implements DependienteVictimaService 
         dependienteVictimaRepository.deleteByDependienteId(dependienteId);
     }
 
-    public List<DependienteVictima> findBydependiente(Integer dependienteId) {
-        return dependienteVictimaRepository.findBydependiente(dependienteId);
+    public List<DependienteVictima> findBydependiente(Dependiente dependiente) {
+        return dependienteVictimaRepository.findBydependiente(dependiente);
     }
 }

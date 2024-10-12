@@ -2,6 +2,7 @@ package com.if7100.service;
 
 import java.util.List;
 
+import com.if7100.entity.Dependiente;
 import com.if7100.entity.DependienteVictima;
 
 public interface DependienteVictimaService {
@@ -16,6 +17,6 @@ public interface DependienteVictimaService {
 
     void deleteByDependienteId(Integer dependienteId);
 
-    public List<DependienteVictima> findBydependiente(Integer dependienteId);
+    public List<DependienteVictima> findBydependiente(Dependiente dependiente);
 
 }

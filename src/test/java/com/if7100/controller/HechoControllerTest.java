@@ -15,7 +15,7 @@ public class HechoControllerTest {
     @Autowired
     private HechoRepository hechoRepository;
 
-    private Hecho hecho = new Hecho(2, 2, 2, 2, 2, 2, "SI", "SI", 2, 506,"Limon","Limon","Limon", "2023-05-12T01:20"," ");
+    private Hecho hecho = new Hecho(2, 2, 2, 2, "SI", "SI", 2, "Limon","Limon","Limon", "2023-05-12T01:20"," ", 52);
     private Hecho consultado = new Hecho();
 
     @Test
@@ -25,18 +25,18 @@ public class HechoControllerTest {
 
     @Test
     public void testDos() throws Exception{
-        consultado=hechoRepository.findByCIIdVictima(2);
-        assertEquals(consultado.getCIIdVictima(),2);
-        assertNotEquals(consultado.getCIIdVictima(),1);
+        consultado=hechoRepository.findByVictima();
+        assertEquals(consultado.getVictima(),2);
+        assertNotEquals(consultado.getVictima(),1);
     }
 
     @Test
     public void testTres() throws Exception{
         consultado=hechoRepository.findByCIIdVictima(2);
-        consultado.setCIPais(505);
+        consultado.setCodigoPais(1);
         hechoRepository.save(consultado);
         consultado=hechoRepository.findByCIIdVictima(2);
-        assertNotEquals(consultado.getCIPais(),506);
+        assertNotEquals(consultado.getCodigoPais(),52);
     }
 
     @Test

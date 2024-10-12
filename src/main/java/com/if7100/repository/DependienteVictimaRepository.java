@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.if7100.entity.Dependiente;
 import com.if7100.entity.DependienteVictima;
 
 
@@ -19,7 +20,7 @@ public interface DependienteVictimaRepository extends JpaRepository<DependienteV
     void deleteByDependienteId(@Param("CI_Codigo_Dependiente") Integer CI_Codigo_Dependiente);
 
     // Este método buscará todas las relaciones DependienteVictima asociadas con un dependiente
-    List<DependienteVictima> findBydependiente(Integer dependienteId);
+    List<DependienteVictima> findBydependiente(Dependiente dependiente);
 
     
 }

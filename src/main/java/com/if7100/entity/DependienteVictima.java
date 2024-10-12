@@ -15,7 +15,7 @@ public class DependienteVictima {
     
       @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer CI_Id_DependienteVictima;
+    private Integer CI_Id_Dependientevictima;
 
     @ManyToOne
     @JoinColumn(name = "CI_ID_Victima", referencedColumnName = "CI_Id")
@@ -27,13 +27,21 @@ public class DependienteVictima {
 
     public DependienteVictima(){}
 
-     // Getters y Setters
-     public Integer getCI_Id_DependienteVictima() {
-        return CI_Id_DependienteVictima;
+    public DependienteVictima(int CI_Id_Dependientevictima, Dependiente dependiente, Victima victima){
+        super();
+        this.CI_Id_Dependientevictima = CI_Id_Dependientevictima;
+        this.dependiente = dependiente;
+        this.victima = victima;
+
     }
 
-    public void setCI_Id_DependienteVictima(Integer CI_Id_DependienteVictima) {
-        this.CI_Id_DependienteVictima = CI_Id_DependienteVictima;
+     // Getters y Setters
+     public Integer getCI_Id_DependienteVictima() {
+        return CI_Id_Dependientevictima;
+    }
+
+    public void setCI_Id_DependienteVictima(Integer CI_Id_Dependientevictima) {
+        this.CI_Id_Dependientevictima = CI_Id_Dependientevictima;
     }
 
     public Dependiente getDependiente() {

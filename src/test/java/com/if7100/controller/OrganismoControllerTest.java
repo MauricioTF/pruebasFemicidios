@@ -15,7 +15,7 @@ public class OrganismoControllerTest {
 	@Autowired
 	private OrganismoRepository organismoRepository;
 	private String str="aaa";
-	Organismo org=new Organismo("aaa","aaa", "aaa", "aaa", "aaa");
+	Organismo org=new Organismo("aaa","aaa", "aaa", "aaa", 52);
 	Organismo consultado= new Organismo();
 	@Test
 	private void Test1() throws Exception{
@@ -25,7 +25,7 @@ public class OrganismoControllerTest {
 	private void Test2() throws Exception{
 		consultado=organismoRepository.findByCVNombre("aaa");
 		assertEquals(consultado.getCVRol(),"aaa");
-		assertNotEquals(consultado.getCVNacionalidad(),"aaa");
+		assertNotEquals(consultado.getCodigoPais(),"aaa");
 	}
 	
 	@Test

@@ -28,7 +28,7 @@ private String Contrasena="Liss";
 private int UsuarioAct=1;
 private String Nombre2="Reichell";
 
-private Usuario usuario= new Usuario(Cedula, Nombre, Apellido, perfil, Contrasena);
+private Usuario usuario= new Usuario(Cedula, Nombre, Apellido, perfil, UsuarioAct, Contrasena);
 private Usuario usuarioConsultado= new Usuario();
 
 

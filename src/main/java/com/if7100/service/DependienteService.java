@@ -14,6 +14,8 @@ public interface DependienteService
 {
 	void saveDependienteVictima(DependienteVictima dependienteVictima);
 
+	void updateDependienteVictima(DependienteVictima dependienteVictima);
+
 	List<Dependiente> getAllDependiente();
 	
 	Dependiente saveDependiente(Dependiente dependiente);

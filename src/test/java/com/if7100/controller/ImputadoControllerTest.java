@@ -40,7 +40,7 @@ private String  CV_Antecedentes="SI";
 private String CV_Suicidio="NO";
 private String CV_Generador="Organismo2";
 
-    Imputado imputado = new Imputado("700260950", "MadaraKijan", "Masculino", "Hetero",sexo, "22", "BackTrack", "506");
+    Imputado imputado = new Imputado("700260950", "MadaraKijan", "Masculino", "Hetero",sexo, "22", "BackTrack", 506);
 
 
     Imputado consultado= new Imputado();

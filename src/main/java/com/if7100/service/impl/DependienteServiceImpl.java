@@ -121,6 +121,10 @@ public class DependienteServiceImpl implements DependienteService{
         dependienteVictimaRepository.save(dependienteVictima);
     }
 
+	@Override
+    public void updateDependienteVictima(DependienteVictima dependienteVictima) {
+        dependienteVictimaRepository.save(dependienteVictima);
+    }
 
     @Override
     public void updateDependiente(Dependiente dependiente) {
@@ -128,7 +132,7 @@ public class DependienteServiceImpl implements DependienteService{
         dependienteRepository.save(dependiente);
 
         // Obtener y actualizar las relaciones DependienteVictima
-        List<DependienteVictima> dependienteVictimaList = dependienteVictimaRepository.findBydependiente(dependiente.getCI_Codigo());
+        List<DependienteVictima> dependienteVictimaList = dependienteVictimaRepository.findBydependiente(dependiente);
         
         for (DependienteVictima dependienteVictima : dependienteVictimaList) {
             dependienteVictima.setDependiente(dependiente); // Actualizar la relación dependiente
