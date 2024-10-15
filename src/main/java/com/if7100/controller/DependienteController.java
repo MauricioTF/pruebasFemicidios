@@ -43,7 +43,6 @@ public class DependienteController {
 	private DependienteVictimaService dependienteVictimaService;
 
 	private DependienteService dependienteService;
-	private DependienteVictimaRepository dependienteVictimaRepository;
 
 	// instancias para control de acceso
 	private UsuarioRepository usuarioRepository;
@@ -113,9 +112,10 @@ public class DependienteController {
 
 	@GetMapping("/dependiente/{pg}")
 	public String listdependiente(Model model, @PathVariable Integer pg) {
-		if (pg < 1) {
-			return "redirect:/dependiente/1";
-		}
+		
+		this.validarPerfil();
+        
+        Integer codigoPaisUsuario = this.usuario.getCodigoPais();
 
 		int numeroTotalElementos = dependienteService.getAllDependiente().size();
 
@@ -131,6 +131,7 @@ public class DependienteController {
 		model.addAttribute("nPaginas", nPaginas);
 		model.addAttribute("dependiente", dependientePage.getContent());
 		model.addAttribute("tipoRelacionesFamiliares", dependienteService.getAllTipoRelacionesFamiliaresPage(pageable));
+
 		return "dependientes/dependiente";
 	}
 
