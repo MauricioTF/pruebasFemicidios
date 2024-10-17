@@ -34,7 +34,11 @@ import com.if7100.repository.DependienteVictimaRepository;
 
 import com.if7100.repository.UsuarioRepository;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Controller
@@ -103,6 +107,7 @@ public class DependienteController {
 	private void modelAttributes(Model model) {
 
 		model.addAttribute("tipoRelacionFamiliar", tipoRelacionFamiliarService.getAllTipoRelacionFamiliar());
+
 	}
 
 	@GetMapping("/dependientes")
@@ -112,10 +117,10 @@ public class DependienteController {
 
 	@GetMapping("/dependiente/{pg}")
 	public String listdependiente(Model model, @PathVariable Integer pg) {
-		
+
 		this.validarPerfil();
-        
-        Integer codigoPaisUsuario = this.usuario.getCodigoPais();
+
+		Integer codigoPaisUsuario = this.usuario.getCodigoPais();
 
 		int numeroTotalElementos = dependienteService.getAllDependiente().size();
 
@@ -123,14 +128,47 @@ public class DependienteController {
 
 		Page<Dependiente> dependientePage = dependienteService.getAllDependientePage(pageable);
 
+		List<Victima> victimas = null;
+		List<DependienteVictima> relaciones;
+		// Declarar la lista de víctimas antes del ciclo
+		List<Victima> todasLasVictimas = new ArrayList<>();
+		// Mapa para asociar dependiente con sus víctimas
+		Map<Dependiente, List<Victima>> dependienteVictimasMap = new HashMap<>();
+		for (int i = 0; i < numeroTotalElementos; i++) {
+
+			Dependiente dependiente = dependienteService
+					.getDependienteById(dependientePage.getContent().get(i).getCI_Codigo());
+
+			// Buscar todas las relaciones dependiente-víctima para este dependiente
+			relaciones = dependienteVictimaService.findBydependiente(dependiente);
+
+			// Extraer las víctimas de las relaciones
+			victimas = relaciones.stream()
+					.map(DependienteVictima::getVictima) // Obtener la víctima de cada relación
+					.collect(Collectors.toList(
+
+					));
+
+			todasLasVictimas.addAll(victimas);
+			dependienteVictimasMap.put(dependiente, victimas);
+		}
+
+		// Verificar los datos impresos en la consola
+		for (Map.Entry<Dependiente, List<Victima>> entry : dependienteVictimasMap.entrySet()) {
+			System.out.println("Dependiente: " + entry.getKey().getCVDNI());
+			System.out.println("Víctimas asociadas:");
+			for (Victima victima : entry.getValue()) {
+				System.out.println(" - " + victima.getCVNombre());
+			}
+		}
 		List<Integer> nPaginas = IntStream.rangeClosed(1, dependientePage.getTotalPages())
 				.boxed()
 				.toList();
 
 		model.addAttribute("PaginaActual", pg);
 		model.addAttribute("nPaginas", nPaginas);
-		model.addAttribute("dependiente", dependientePage.getContent());
 		model.addAttribute("tipoRelacionesFamiliares", dependienteService.getAllTipoRelacionesFamiliaresPage(pageable));
+		model.addAttribute("dependienteVictimasMap", dependienteVictimasMap);
 
 		return "dependientes/dependiente";
 	}
@@ -166,7 +204,6 @@ public class DependienteController {
 	public String saveDependiente(@ModelAttribute("dependiente") Dependiente dependiente,
 			@RequestParam("victima") Integer idVictima,
 			Model model) {
-				
 
 		Victima victima = victimaService.getVictimaById(idVictima);
 
@@ -227,8 +264,8 @@ public class DependienteController {
 			if (!this.perfil.getCVRol().equals("Consulta")) {
 
 				model.addAttribute("dependiente", dependienteService.getDependienteById(id));
-				
-				 // Obtener todas las víctimas y agregarlas al modelo
+
+				// Obtener todas las víctimas y agregarlas al modelo
 				List<Victima> victimas = victimaService.getAllVictima();
 				model.addAttribute("victimas", victimas);
 
@@ -240,14 +277,14 @@ public class DependienteController {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-    		System.out.println("Error al actualizar: " + e.getMessage());
+			System.out.println("Error al actualizar: " + e.getMessage());
 			return "SinAcceso";
 		}
 	}
 
 	@PostMapping("/dependientes/{id}")
 	public String updatedependiente(@PathVariable Integer id,
-			@ModelAttribute("dependiente") Dependiente dependiente,@RequestParam("victima") Integer idVictima,
+			@ModelAttribute("dependiente") Dependiente dependiente, @RequestParam("victima") Integer idVictima,
 			Model model) {
 
 		Dependiente existingDependiente = dependienteService.getDependienteById(id);
@@ -258,7 +295,8 @@ public class DependienteController {
 
 		Victima victima = victimaService.getVictimaById(idVictima);
 
-		DependienteVictima existingDependienteVictima = dependienteVictimaService.findBydependiente(existingDependiente).get(0);
+		DependienteVictima existingDependienteVictima = dependienteVictimaService.findBydependiente(existingDependiente)
+				.get(0);
 		existingDependienteVictima.setDependiente(existingDependiente);
 		existingDependienteVictima.setVictima(victima);
 
