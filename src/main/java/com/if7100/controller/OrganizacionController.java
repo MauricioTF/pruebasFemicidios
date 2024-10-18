@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.if7100.entity.Usuario;
 import com.if7100.repository.UsuarioRepository;
 import com.if7100.entity.Organizacion;
 import com.if7100.entity.Perfil;
@@ -27,7 +26,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -107,6 +105,8 @@ public class OrganizacionController {
 		model.addAttribute("PaginaActual", pg);
 		model.addAttribute("nPaginas", nPaginas);
 		model.addAttribute("organizacion", organizacionPage.getContent());
+		model.addAttribute("paises", organizacionService.getAllPaisesPage(pageable));
+
 		return "organizacion/organizacion";
 	}
 

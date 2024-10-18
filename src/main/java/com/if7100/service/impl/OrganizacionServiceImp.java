@@ -1,23 +1,40 @@
 package com.if7100.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.if7100.entity.Hecho;
 import com.if7100.entity.Organizacion;
+import com.if7100.entity.Paises;
 import com.if7100.repository.OrganizacionRepository;
+import com.if7100.repository.PaisesRepository;
 import com.if7100.service.OrganizacionService;
 
 @Service
-public class OrganizacionServiceImp implements OrganizacionService{
-    
-    private OrganizacionRepository organizacionRepository;
+public class OrganizacionServiceImp implements OrganizacionService {
 
-    public OrganizacionServiceImp(OrganizacionRepository organizacionRepository){
+    private OrganizacionRepository organizacionRepository;
+    private PaisesRepository paisesRepository;
+
+    public OrganizacionServiceImp(OrganizacionRepository organizacionRepository, PaisesRepository paisesRepository) {
         super();
         this.organizacionRepository = organizacionRepository;
+        this.paisesRepository = paisesRepository;
+    }
+
+    @Override
+    public List<Paises> getAllPaisesPage(Pageable pageable) {
+        Page<Organizacion> organizaciones = organizacionRepository.findAll(pageable);
+        List<Paises> paises = new ArrayList<>();
+
+        for (Organizacion organizacion : organizaciones) {
+            paises.add(paisesRepository.findById(organizacion.getCICodigoPais()).orElse(new Paises()));
+        }
+        return paises;
     }
 
     @Override
@@ -44,7 +61,7 @@ public class OrganizacionServiceImp implements OrganizacionService{
 
     @Override
     public Organizacion updateOrganizacion(Organizacion organizacion) {
-		return organizacionRepository.save(organizacion);
+        return organizacionRepository.save(organizacion);
     }
 
     @Override
