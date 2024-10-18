@@ -51,8 +51,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="CICodigoOrganizacion">Seleccione la organización</label>
-                    <select th:field="*{CICodigoOrganizacion}" class="form-select" required>
+                    <label for="organizacion">Seleccione la organización</label>
+                    <select th:field="*{organizacion}" class="form-select" required>
                         <option value="" disabled selected>Seleccione una organización</option>
                         <option th:each="organizacion : ${organizacion}" th:value="${organizacion.CI_Codigo_Organizacion}" th:text="${organizacion.CVNombre}"></option>
                     </select>                    

@@ -4,6 +4,8 @@
 package com.if7100.entity;
 
 
+import org.hibernate.annotations.ManyToAny;
+
 /**
  * @author Liss
  * Fecha: 11 de abril del 2023
@@ -13,6 +15,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
@@ -46,8 +50,9 @@ public class Usuario{
 	@Column(name = "codigo_pais", nullable = false)
 	private Integer codigoPais;
 	
-	@Column(name = "CI_Codigo_Organizacion", nullable = false)
-	private Integer CICodigoOrganizacion;
+	@ManyToOne
+	@JoinColumn(name = "CI_Codigo_Organizacion", referencedColumnName = "CI_Codigo_Organizacion", nullable = false)
+	private Organizacion organizacion;
 	
 	
 	/*@ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
@@ -71,11 +76,11 @@ public class Usuario{
 		this.CIPerfil = usuario.CIPerfil;
 		this.codigoPais = usuario.codigoPais;
 		this.TCClave = usuario.TCClave;
-		this.CICodigoOrganizacion = usuario.CICodigoOrganizacion;
+		this.organizacion = usuario.organizacion;
 	}
 	
 
-	public Usuario(String cVCedula, String cVNombre, String cVApellidos, int cIPerfil, int codigoPais, String tCClave, int CICodigoOrganizacion) {
+	public Usuario(String cVCedula, String cVNombre, String cVApellidos, int cIPerfil, int codigoPais, String tCClave, Organizacion organizacion) {
 		super();
 		CVCedula = cVCedula;
 		CVNombre = cVNombre;
@@ -83,7 +88,7 @@ public class Usuario{
 		CIPerfil = cIPerfil;
 		this.codigoPais = codigoPais;
 		TCClave = tCClave;
-		this.CICodigoOrganizacion = CICodigoOrganizacion;
+		this.organizacion = organizacion;
 	}
 
 
@@ -144,12 +149,12 @@ public class Usuario{
 		this.codigoPais = codigoPais;
 	}
 
-	public Integer getCICodigoOrganizacion() {
-		return this.CICodigoOrganizacion;
+	public Organizacion getOrganizacion() {
+		return this.organizacion;
 	}
 
-	public void setCICodigoOrganizacion(int CICodigoOrganizacion) {
-		this.CICodigoOrganizacion = CICodigoOrganizacion;
+	public void setOrganizacion(Organizacion organizacion) {
+		this.organizacion = organizacion;
 	}
 }
 

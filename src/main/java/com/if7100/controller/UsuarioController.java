@@ -112,8 +112,11 @@ public class UsuarioController {
 				// Obtener el código de país del usuario logueado
 				Integer codigoPaisUsuarioLogueado = this.usuario.getCodigoPais();
 
-				// Filtrar usuarios por código de país
-				List<Usuario> usuariosFiltrados = usuarioService.getUsuariosByCodigoPais(codigoPaisUsuarioLogueado);
+				// Filtrar usuarios según el código de país almacenado en la organización
+				List<Usuario> usuariosFiltrados = usuarioService.getAllUsuarios().stream()
+				.filter(usuario -> usuario.getOrganizacion() != null && 
+								   usuario.getOrganizacion().getCICodigoPais().equals(codigoPaisUsuarioLogueado))
+				.collect(Collectors.toList());
 
 				// Paginación
 				int numeroTotalElementos = usuariosFiltrados.size();
@@ -132,12 +135,14 @@ public class UsuarioController {
 						.rangeClosed(1, (int) Math.ceil((double) numeroTotalElementos / tamanoPagina))
 						.boxed()
 						.toList();
-
+				// Obtener la organización asociada al usuario
+				Organizacion organizacion = usuario.getOrganizacion();
+				
 				// Enviar datos al modelo
 				model.addAttribute("PaginaActual", pg);
 				model.addAttribute("nPaginas", nPaginas);
 				model.addAttribute("usuarios", usuariosPaginados);
-				model.addAttribute("organizacion", usuarioService.getAllOrganizacionPage(pageable));
+				model.addAttribute("organizacion", organizacion);
 
 				return "usuarios/usuarios";
 			} else {
@@ -226,8 +231,10 @@ public class UsuarioController {
 			this.validarPerfil();
 			if (this.perfil.getCVRol().equals("Administrador")) {
 
-				List<Paises> paises = paisesService.getAllPaises(); // Obtiene la lista de países
-				model.addAttribute("paises", paises); // Envía la lista de países al modelo
+				List<Paises> paises = paisesService.getAllPaises();
+				model.addAttribute("paises", paises); 
+
+				model.addAttribute("organizacion", organizacionService.getAllOrganizacion()); 
 
 				model.addAttribute("usuario", usuarioService.getUsuarioById(Id));
 				return "usuarios/edit_usuario";
@@ -250,6 +257,8 @@ public class UsuarioController {
 		existingUsuario.setCIPerfil(usuario.getCIPerfil());
 		existingUsuario.setTCClave(usuario.getTCClave());
 		existingUsuario.setCodigoPais(usuario.getCodigoPais()); // Actualiza el país seleccionado
+		existingUsuario.setOrganizacion(usuario.getOrganizacion());
+
 		usuarioService.updateUsuario(existingUsuario);
 		String descripcion = "Actualizo un Usuario con id: " + Id;
 		Bitacora bitacora = new Bitacora(this.usuario.getCI_Id(), this.usuario.getCVNombre(), this.perfil.getCVRol(),

@@ -29,7 +29,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         this.organizacionRepository = organizacionRepository;
     }
 
-    @Override
+    /*@Override
     public List<Organizacion> getAllOrganizacionPage(Pageable pageable) {
         Page<Usuario> usuarios = usuarioRepository.findAll(pageable);
         List<Organizacion> organizacion = new ArrayList<>();
@@ -38,7 +38,7 @@ public class UsuarioServiceImpl implements UsuarioService {
             organizacion.add(organizacionRepository.findById(usuario.getCICodigoOrganizacion()).orElse(new Organizacion()));
         }
         return organizacion;
-    }
+    }*/
 
     @Override
     public List<Usuario> getAllUsuarios() {

@@ -19,7 +19,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface UsuarioService {
 
-    List<Organizacion> getAllOrganizacionPage(Pageable pageable);
+    //List<Organizacion> getAllOrganizacionPage(Pageable pageable);
 
     List<Usuario> getAllUsuarios();
 
