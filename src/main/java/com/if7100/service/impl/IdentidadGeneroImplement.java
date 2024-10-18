@@ -12,11 +12,6 @@ import com.if7100.entity.IdentidadGenero;
 import com.if7100.repository.IdentidadGeneroRepository;
 import com.if7100.service.IdentidadGeneroService;
 
-/**
- * 
- * @author Michael Arauz Torrez
- * @since 21/04/2023
- */
 @Service
 public class IdentidadGeneroImplement implements IdentidadGeneroService {
 

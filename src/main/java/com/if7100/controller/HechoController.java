@@ -241,6 +241,7 @@ public void exportToPDF(HttpServletResponse response) throws IOException, java.i
     public String saveHecho(@ModelAttribute("hecho") Hecho hecho, Model model){
         try {
             hechoService.saveHecho(hecho);
+            
         	String descripcion="Creo en Hechos: " + hecho.getCI_Id();
             Bitacora bitacora = new Bitacora(this.usuario.getCI_Id(), this.usuario.getCVNombre(), this.perfil.getCVRol(), descripcion);
             bitacoraService.saveBitacora(bitacora);

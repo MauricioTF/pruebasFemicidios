@@ -82,6 +82,9 @@ public class RedireccionController {
             case "tipoOrganismo" -> {
                 return "redirect:/tipoOrganismo";
             }
+            case "organizacion" -> {
+                return "redirect:/organizacion";
+            }
           
             default -> {
                 return "redirect:/error";

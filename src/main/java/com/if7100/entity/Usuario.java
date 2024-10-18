@@ -46,6 +46,9 @@ public class Usuario{
 	@Column(name = "codigo_pais", nullable = false)
 	private Integer codigoPais;
 	
+	@Column(name = "CI_Codigo_Organizacion", nullable = false)
+	private Integer CICodigoOrganizacion;
+	
 	
 	/*@ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
 	@JoinTable(
@@ -68,10 +71,11 @@ public class Usuario{
 		this.CIPerfil = usuario.CIPerfil;
 		this.codigoPais = usuario.codigoPais;
 		this.TCClave = usuario.TCClave;
+		this.CICodigoOrganizacion = usuario.CICodigoOrganizacion;
 	}
 	
 
-	public Usuario(String cVCedula, String cVNombre, String cVApellidos, int cIPerfil, int codigoPais, String tCClave) {
+	public Usuario(String cVCedula, String cVNombre, String cVApellidos, int cIPerfil, int codigoPais, String tCClave, int CICodigoOrganizacion) {
 		super();
 		CVCedula = cVCedula;
 		CVNombre = cVNombre;
@@ -79,6 +83,7 @@ public class Usuario{
 		CIPerfil = cIPerfil;
 		this.codigoPais = codigoPais;
 		TCClave = tCClave;
+		this.CICodigoOrganizacion = CICodigoOrganizacion;
 	}
 
 
@@ -137,6 +142,14 @@ public class Usuario{
 
 	public void setCodigoPais(int codigoPais) {
 		this.codigoPais = codigoPais;
+	}
+
+	public Integer getCICodigoOrganizacion() {
+		return this.CICodigoOrganizacion;
+	}
+
+	public void setCICodigoOrganizacion(int CICodigoOrganizacion) {
+		this.CICodigoOrganizacion = CICodigoOrganizacion;
 	}
 }
 

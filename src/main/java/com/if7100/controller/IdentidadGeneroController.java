@@ -41,16 +41,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 import java.util.stream.IntStream;
 
-/**
- * @author michael arauz torrez
- *
- */
 @Controller
 public class IdentidadGeneroController {
 
-	/**
-	 * 
-	 */
 	private IdentidadGeneroService identidadGeneroService;
 	// instancias para control de acceso
 	private UsuarioRepository usuarioRepository;
