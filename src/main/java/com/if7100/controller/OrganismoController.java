@@ -99,10 +99,6 @@ OrganismoService organismoService, TipoOrganismoService tipoOrganismoService, Pe
  @GetMapping("/organismo/{pg}")
  public String listOrganismo(Model model, @PathVariable Integer pg){
 
-	 /*if (pg < 1){
-		 return "redirect:/organismo/1";
-	 }*/
-
 	 this.validarPerfil();
 
 	// Obtener el código de país del usuario logueado
@@ -218,9 +214,9 @@ OrganismoService organismoService, TipoOrganismoService tipoOrganismoService, Pe
 	 Organismo existingOrganismo=organismoService.getOrganismoById(id);
 	 model.addAttribute("tipoOrganismo", tipoOrganismoService.getAllTipoOrganismos());
 
-	 existingOrganismo.setCodigoPais(existingOrganismo.getCodigoPais());//actualiza codigo pais
+	 existingOrganismo.setCodigoPais(organismo.getCodigoPais());//actualiza codigo pais
 	 existingOrganismo.setCI_Id(id);
-	 existingOrganismo.setCVNombre(existingOrganismo.getCVNombre());
+	 existingOrganismo.setCVNombre(organismo.getCVNombre());
 	 existingOrganismo.setCVRol(organismo.getCVRol());
 	 existingOrganismo.setCVTipo_Organismo(organismo.getCVTipo_Organismo());
 	 existingOrganismo.setCVContacto(organismo.getCVContacto());

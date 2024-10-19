@@ -12,6 +12,9 @@ import org.springframework.data.domain.Pageable;
 
 public interface DependienteService
 {
+
+	List<DependienteVictima> findBydependiente(Dependiente dependiente);
+
 	void saveDependienteVictima(DependienteVictima dependienteVictima);
 
 	void updateDependienteVictima(DependienteVictima dependienteVictima);

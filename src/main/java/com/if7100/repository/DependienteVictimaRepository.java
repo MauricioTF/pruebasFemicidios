@@ -21,6 +21,5 @@ public interface DependienteVictimaRepository extends JpaRepository<DependienteV
 
     // Este método buscará todas las relaciones DependienteVictima asociadas con un dependiente
     List<DependienteVictima> findBydependiente(Dependiente dependiente);
-
     
 }

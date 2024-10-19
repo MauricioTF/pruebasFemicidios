@@ -116,62 +116,40 @@ public class DependienteController {
 	}
 
 	@GetMapping("/dependiente/{pg}")
-	public String listdependiente(Model model, @PathVariable Integer pg) {
+public String listDependiente(Model model, @PathVariable Integer pg) {
+    this.validarPerfil();
 
-		this.validarPerfil();
+    int numeroTotalElementos = dependienteVictimaService.getAllDependienteVictima().size();
+    Pageable pageable = initPages(pg, 5, numeroTotalElementos);
+    Page<DependienteVictima> dependienteVictimaPage = dependienteVictimaService.getAllDependienteVictimaPage(pageable);
 
-		Integer codigoPaisUsuario = this.usuario.getCodigoPais();
+    // Mapa para asociar dependiente con sus víctimas
+    Map<Dependiente, List<Victima>> dependienteVictimasMap = new HashMap<>();
+    
+    for (DependienteVictima relacion : dependienteVictimaPage.getContent()) {
+        Dependiente dependiente = relacion.getDependiente();
+        Victima victima = relacion.getVictima();
 
-		int numeroTotalElementos = dependienteService.getAllDependiente().size();
+        // Verificar si el dependiente ya está en el mapa
+        if (!dependienteVictimasMap.containsKey(dependiente)) {
+            dependienteVictimasMap.put(dependiente, new ArrayList<>());
+        }
 
-		Pageable pageable = initPages(pg, 5, numeroTotalElementos);
+        // Agregar la víctima a la lista correspondiente al dependiente
+        dependienteVictimasMap.get(dependiente).add(victima);
+    }
 
-		Page<Dependiente> dependientePage = dependienteService.getAllDependientePage(pageable);
+    List<Integer> nPaginas = IntStream.rangeClosed(1, dependienteVictimaPage.getTotalPages())
+            .boxed()
+            .toList();
 
-		List<Victima> victimas = null;
-		List<DependienteVictima> relaciones;
-		// Declarar la lista de víctimas antes del ciclo
-		List<Victima> todasLasVictimas = new ArrayList<>();
-		// Mapa para asociar dependiente con sus víctimas
-		Map<Dependiente, List<Victima>> dependienteVictimasMap = new HashMap<>();
-		for (int i = 0; i < numeroTotalElementos; i++) {
+    model.addAttribute("PaginaActual", pg);
+    model.addAttribute("nPaginas", nPaginas);
+	model.addAttribute("tipoRelacionesFamiliares", dependienteService.getAllTipoRelacionesFamiliaresPage(pageable));
+    model.addAttribute("dependienteVictimasMap", dependienteVictimasMap);
 
-			Dependiente dependiente = dependienteService
-					.getDependienteById(dependientePage.getContent().get(i).getCI_Codigo());
-
-			// Buscar todas las relaciones dependiente-víctima para este dependiente
-			relaciones = dependienteVictimaService.findBydependiente(dependiente);
-
-			// Extraer las víctimas de las relaciones
-			victimas = relaciones.stream()
-					.map(DependienteVictima::getVictima) // Obtener la víctima de cada relación
-					.collect(Collectors.toList(
-
-					));
-
-			todasLasVictimas.addAll(victimas);
-			dependienteVictimasMap.put(dependiente, victimas);
-		}
-
-		// Verificar los datos impresos en la consola
-		for (Map.Entry<Dependiente, List<Victima>> entry : dependienteVictimasMap.entrySet()) {
-			System.out.println("Dependiente: " + entry.getKey().getCVDNI());
-			System.out.println("Víctimas asociadas:");
-			for (Victima victima : entry.getValue()) {
-				System.out.println(" - " + victima.getCVNombre());
-			}
-		}
-		List<Integer> nPaginas = IntStream.rangeClosed(1, dependientePage.getTotalPages())
-				.boxed()
-				.toList();
-
-		model.addAttribute("PaginaActual", pg);
-		model.addAttribute("nPaginas", nPaginas);
-		model.addAttribute("tipoRelacionesFamiliares", dependienteService.getAllTipoRelacionesFamiliaresPage(pageable));
-		model.addAttribute("dependienteVictimasMap", dependienteVictimasMap);
-
-		return "dependientes/dependiente";
-	}
+    return "dependientes/dependiente";
+}
 
 	@GetMapping("/dependientes/new")
 	public String createdependienteForm(Model model) {
@@ -265,9 +243,20 @@ public class DependienteController {
 
 				model.addAttribute("dependiente", dependienteService.getDependienteById(id));
 
+				// Obtener la relación de dependiente-víctima desde la tabla intermedia
+				List<DependienteVictima> dependienteVictimaRelaciones = dependienteVictimaService.findBydependiente(dependienteService.getDependienteById(id));
+				
 				// Obtener todas las víctimas y agregarlas al modelo
 				List<Victima> victimas = victimaService.getAllVictima();
-				model.addAttribute("victimas", victimas);
+
+				// Extraer las víctimas relacionadas con el dependiente
+				List<Victima> victimasRelacionadas = dependienteVictimaRelaciones.stream()
+				.map(DependienteVictima::getVictima)
+				.collect(Collectors.toList());
+		
+			model.addAttribute("dependiente", dependienteService.getDependienteById(id));
+			model.addAttribute("victimas", victimas);
+			model.addAttribute("victimasRelacionadas", victimasRelacionadas);
 
 				modelAttributes(model);
 				return "dependientes/edit_dependiente";

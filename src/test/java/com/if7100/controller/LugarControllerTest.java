@@ -24,11 +24,12 @@ public class LugarControllerTest {
 	private Integer Tipo_Lugar=3;
 	private String Direccion="tima";
 	private String Ciudad="tima";
-	private Integer Pais=506;
 	private int codigoPostal=2023;
-	private String Descripcion2="Prueba";
-	
-	private Lugar lugar= new Lugar(Hecho, "parqueo", 2, "Boston", Ciudad, Pais, codigoPostal);
+	private String provincia="Prueba";
+	private String canton="Prueba";
+	private String distrito="Prueba";
+
+	private Lugar lugar= new Lugar(Hecho, Descripcion, Tipo_Lugar, Direccion, Ciudad, codigoPostal, provincia, canton, distrito);
 	private Lugar LugarConsultado= new Lugar();
 	
 	@Test
@@ -52,7 +53,6 @@ public class LugarControllerTest {
 		LugarConsultado.setCITipoLugar(lugar.getCITipoLugar());
 		LugarConsultado.setCV_Direccion(lugar.getCV_Direccion());
 		LugarConsultado.setCV_Ciudad(lugar.getCV_Ciudad());
-		LugarConsultado.setCI_Pais(lugar.getCI_Pais());
 		LugarConsultado.setCI_Codigo_Postal(lugar.getCI_Codigo_Postal());
 		lugarRepository.save(LugarConsultado);
 	}

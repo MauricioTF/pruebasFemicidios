@@ -46,9 +46,7 @@
 											<td th:text="${organizacion.CVDireccion}"></td>
 											<td th:text="${organizacion.CVTelefono}"></td>
 											<td th:text="${organizacion.CVCorreo}"></td>
-											<td
-												th:text="${paises.get(organizacionStat.index).spanish}">
-											</td>
+											
 											<td class="text-center align-middle h-50"><a
 													class="btn btnMaterial btn-flat success" role="button"
 													th:href="@{/organizacion/edit/{id}(id=${organizacion.CI_Codigo_Organizacion})}"><i

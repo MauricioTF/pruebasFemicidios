@@ -58,6 +58,7 @@ com\if7100\entity\TipoRelacionFamiliar.class
 com\if7100\repository\TipoLugarRepository.class
 com\if7100\entity\TipoVictima.class
 com\if7100\service\ImputadoService.class
+com\if7100\controller\OrganizacionController.class
 com\if7100\service\PaisesService.class
 com\if7100\controller\TipoLugarController.class
 com\if7100\service\LugarService.class
@@ -69,11 +70,14 @@ com\if7100\service\impl\BitacoraServiceImpl.class
 com\if7100\controller\RegistroController.class
 com\if7100\entity\Bitacora.class
 com\if7100\service\HechoService.class
+com\if7100\entity\DependienteVictima.class
 com\if7100\controller\NivelEducativoController.class
 com\if7100\repository\TipoOrganismoRepository.class
 com\if7100\usuarios\seguridad\SecurityUser.class
 com\if7100\controller\IdentidadGeneroController.class
+com\if7100\repository\OrganizacionRepository.class
 com\if7100\service\impl\HechoOrganismoServiceImpl.class
+com\if7100\service\impl\DependienteVictimaServiceImpl.class
 com\if7100\controller\VictimaController.class
 com\if7100\entity\SituacionJuridica.class
 com\if7100\repository\VictimaRepository.class
@@ -82,6 +86,7 @@ com\if7100\repository\BitacoraRepository.class
 com\if7100\entity\Paises.class
 com\if7100\repository\NivelEducativoRepository.class
 com\if7100\service\impl\HechoImputadoServiceImpl.class
+com\if7100\repository\DependienteVictimaRepository.class
 com\if7100\service\IdentidadGeneroService.class
 com\if7100\service\DependienteService.class
 com\if7100\service\impl\OrganismoServiceImpl.class
@@ -93,6 +98,7 @@ com\if7100\entity\Modalidad.class
 com\if7100\service\impl\ImputadoServiceImpl.class
 com\if7100\repository\OrganismoRepository.class
 com\if7100\repository\DependienteRepository.class
+com\if7100\controller\DependienteController.class
 com\if7100\entity\HechoOrganismo.class
 com\if7100\controller\TipoOrganismoController.class
 com\if7100\service\OrientacionSexualService.class
@@ -102,12 +108,14 @@ com\if7100\repository\LugarRepository.class
 com\if7100\service\impl\ProcesoJudicialServiceImpl.class
 com\if7100\entity\Dependiente.class
 com\if7100\service\impl\TipoRelacionFamiliarServImpl.class
+com\if7100\service\OrganizacionService.class
 com\if7100\service\TipoLugarService.class
 com\if7100\controller\TipoRelacionController.class
 com\if7100\service\PaisesidentIdadesgenerosService.class
 com\if7100\entity\Lugar.class
 com\if7100\entity\Imputado.class
 com\if7100\service\impl\PerfilServiceImpl.class
+com\if7100\service\impl\OrganizacionServiceImp.class
 com\if7100\controller\ModalidadController.class
 com\if7100\service\HechoImputadoService.class
 com\if7100\service\UsuarioService.class
@@ -120,6 +128,8 @@ com\if7100\repository\HechoOrganismoRepository.class
 com\if7100\service\impl\DependienteServiceImpl.class
 com\if7100\repository\SituacionJuridicaRepository.class
 com\if7100\repository\PerfilRepository.class
+com\if7100\service\DependienteVictimaService.class
 com\if7100\service\impl\NivelEducativoServiceImpl.class
 com\if7100\service\ModalidadService.class
 com\if7100\repository\ModalidadRepository.class
+com\if7100\entity\Organizacion.class

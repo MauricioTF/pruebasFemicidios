@@ -44,9 +44,6 @@
                                             <th class="text-center">Victima</th>
                                             <th class="text-center">Proceso</th>
                                             <th class="text-center">Pais</th>
-                                            <th class="text-center">Provincia</th>
-                                            <th class="text-center">Canton</th>
-                                            <th class="text-center">Distrito</th>
                                             <th class="text-center">AgresionSexual</th>
                                             <th class="text-center">DenunciaPrevia</th>
                                             <th class="text-center">Generador</th>
@@ -63,11 +60,9 @@
                                             <td th:text="${victimas.get(hechoStat.index).CVDNI}"></td>
                                             <td th:text="${procesosJudiciales.get(hechoStat.index).CVEstado}"></td>
                                             <td
-                                                th:text="${paises.get(hechoStat.index).telefonoPais} + ' - ' + ${paises.get(hechoStat.index).spanish}">
+                                                th:text="${paises.get(hechoStat.index).spanish}">
                                             </td>
-                                            <td th:text="${hecho.CVProvincia}"></td>
-                                            <td th:text="${hecho.CVCanton}"></td>
-                                            <td th:text="${hecho.CVDistrito}"></td>
+                                           
                                             <td th:text="${hecho.CVAgresionSexual}"></td>
                                             <td th:text="${hecho.CVDenunciaPrevia}"></td>
                                             <td th:text="${organismos.get(hechoStat.index).CVNombre}"></td>
@@ -136,6 +131,8 @@
 
             <!-- boton para descargar el pdf -->
             <a th:href="@{/hechos/pdf}" class="btn btn-primary">Descargar PDF</a>
+
+            <a th:href="@{/hechos/excel}" class="btn btn-primary">Descargar Excel</a>
 
         </section>
     </main>

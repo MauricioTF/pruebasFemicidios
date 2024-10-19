@@ -1,11 +1,14 @@
 package com.if7100.service.impl;
 import java.util.List;
+
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.if7100.entity.Dependiente;
 import com.if7100.entity.DependienteVictima;
 import com.if7100.repository.DependienteVictimaRepository;
 import com.if7100.service.DependienteVictimaService;
+import org.springframework.data.domain.Pageable;
 
 import jakarta.transaction.Transactional;
 
@@ -16,6 +19,12 @@ public class DependienteVictimaServiceImpl implements DependienteVictimaService 
 
     public DependienteVictimaServiceImpl(DependienteVictimaRepository dependienteVictimaRepository) {
         this.dependienteVictimaRepository = dependienteVictimaRepository;
+    }
+
+
+    @Override
+    public Page<DependienteVictima> getAllDependienteVictimaPage(Pageable pageable) {
+        return dependienteVictimaRepository.findAll(pageable);
     }
 
     @Override

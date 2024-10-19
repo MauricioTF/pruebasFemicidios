@@ -45,7 +45,11 @@ public class DependienteServiceImpl implements DependienteService{
 		this.dependienteVictimaRepository = dependienteVictimaRepository;
 	}
 
-	
+	@Override
+    public List<DependienteVictima> findBydependiente(Dependiente dependiente) {
+        return dependienteVictimaRepository.findBydependiente(dependiente);
+    }
+
 	@Override
 	public List<Dependiente> getAllDependiente(){
 		return dependienteRepository.findAll(); 

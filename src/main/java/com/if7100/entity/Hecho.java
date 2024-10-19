@@ -32,15 +32,6 @@ public class Hecho {
     //@Column(name = "CI_Id_Proceso", nullable = false)
     //private Integer CIIdProceso;
 
-    @Column(name = "CV_Provincia", nullable = false)
-    private String CVProvincia;
-
-    @Column(name = "CV_Canton", nullable = false)
-    private String CVCanton;
-
-    @Column(name = "CV_Distrito", nullable = false)
-    private String CVDistrito;
-
     @Column(name = "CV_Agresion_Sexual", nullable = false)
     private String CVAgresionSexual;
 
@@ -75,12 +66,9 @@ public class Hecho {
 
     public Hecho(Integer CI_Id, Integer CITipoVictima, Integer CITipoRelacion, Integer CIModalidad,
             /* Integer CIIdVictima,  Integer CIIdProceso,*/ String CVAgresionSexual,
-            String CVDenunciaPrevia, Integer CIIdGenerador, String CVProvincia, String CVCanton,
-            String CVDistrito, String CDFecha, String CVDetalles, int codigoPais) {
+            String CVDenunciaPrevia, Integer CIIdGenerador, String CDFecha, String CVDetalles, int codigoPais) {
         this.CI_Id = CI_Id;
-        this.CVProvincia = CVProvincia;
-        this.CVCanton = CVCanton;
-        this.CVDistrito = CVDistrito;
+        
         this.CITipoVictima = CITipoVictima;
         this.CITipoRelacion = CITipoRelacion;
         this.CIModalidad = CIModalidad;
@@ -178,30 +166,6 @@ public class Hecho {
 
     public void setCI_Id(Integer CI_Id) {
         this.CI_Id = CI_Id;
-    }
-
-    public String getCVProvincia() {
-        return CVProvincia;
-    }
-
-    public void setCVProvincia(String cVProvincia) {
-        CVProvincia = cVProvincia;
-    }
-
-    public String getCVCanton() {
-        return CVCanton;
-    }
-
-    public void setCVCanton(String cVCanton) {
-        CVCanton = cVCanton;
-    }
-
-    public String getCVDistrito() {
-        return CVDistrito;
-    }
-
-    public void setCVDistrito(String cVDistrito) {
-        CVDistrito = cVDistrito;
     }
 
     public Integer getCITipoVictima() {

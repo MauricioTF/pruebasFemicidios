@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.junit.jupiter.api.Test;
 
+import com.if7100.entity.Organizacion;
 import com.if7100.entity.Usuario;
 import com.if7100.repository.UsuarioRepository;
 import com.if7100.service.UsuarioService;
@@ -27,8 +28,9 @@ private int perfil=1;
 private String Contrasena="Liss";
 private int UsuarioAct=1;
 private String Nombre2="Reichell";
+private Organizacion organizacion;
 
-private Usuario usuario= new Usuario(Cedula, Nombre, Apellido, perfil, UsuarioAct, Contrasena);
+private Usuario usuario= new Usuario(Cedula, Nombre, Apellido, perfil, UsuarioAct, Contrasena, organizacion);
 private Usuario usuarioConsultado= new Usuario();
 
 
