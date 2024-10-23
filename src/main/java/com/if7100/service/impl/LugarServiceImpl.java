@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.if7100.entity.Hecho;
 import com.if7100.entity.Lugar;
+import com.if7100.entity.ProcesoJudicial;
 import com.if7100.entity.TipoLugar;
 import com.if7100.entity.TipoRelacion;
 import com.if7100.repository.LugarRepository;
@@ -34,6 +35,11 @@ public class LugarServiceImpl implements LugarService{
         super();
         this.lugarRepository=lugarRepository;
         this.tipoLugarRepository=tipoLugarRepository;
+    }
+
+    @Override
+    public List<Lugar> getLugarByCodigoPaisUsuario(Integer codigoPaisUsuario) {
+        return lugarRepository.findLugarByCodigoPais(codigoPaisUsuario);
     }
 
     public List<Lugar> getAllLugar(){

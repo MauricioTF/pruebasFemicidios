@@ -1,14 +1,17 @@
 package com.if7100.controller;
 
 import com.if7100.entity.Hecho;
+import com.if7100.entity.Imputado;
 import com.if7100.entity.Paises;
 import com.if7100.entity.Perfil;
 import com.if7100.entity.ProcesoJudicial;
+import com.if7100.entity.TipoVictima;
 import com.if7100.entity.Usuario;
 import com.if7100.entity.Victima;
 import com.if7100.entity.Bitacora;
 import com.if7100.repository.UsuarioRepository;
 import com.if7100.service.*;
+import com.if7100.util.ExportExcelUtil;
 import com.itextpdf.io.IOException;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.pdf.PdfDocument;
@@ -141,12 +144,12 @@ public class HechoController {
         document.add(new Paragraph("\n"));
 
         // Crear una tabla con columnas ajustadas dinámicamente
-        Table table = new Table(UnitValue.createPercentArray(new float[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2 }));
+        Table table = new Table(UnitValue.createPercentArray(new float[] { 1, 1, 1, 1, 1, 1, 1, 1, 2 }));
         table.setWidth(UnitValue.createPercentValue(100)); // Ajustar al 100% del ancho de la página
 
         // Agregar encabezado de tabla con estilo
-        String[] headers = { "ID", "Tipo de Víctima", "Tipo de Relación", "Modalidad", "Agresión Sexual", "Generador",
-                "Victima", "Proceso Judicial", "País", "Fecha", "Observaciones" };
+        String[] headers = { "ID", "Tipo de Víctima", "Tipo de Relación", "Modalidad", "Agresión Sexual",
+                "Victima", "Proceso Judicial", "Fecha", "Observaciones" };
         for (String header : headers) {
             table.addHeaderCell(new Cell().add(new Paragraph(header).setBold())
                     .setTextAlignment(TextAlignment.CENTER)
@@ -161,32 +164,28 @@ public class HechoController {
         for (Hecho hecho : hechos) {
             table.addCell(new Cell().add(new Paragraph(String.valueOf(hecho.getCI_Id())))
                     .setTextAlignment(TextAlignment.CENTER));
-            table.addCell(new Cell().add(new Paragraph(String.valueOf(hecho.getCITipoVictima())))
+            table.addCell(new Cell().add(new Paragraph(tipoVictimaService.getTipoVictimaById(hecho.getCITipoVictima()).getCVTitulo()))
                     .setTextAlignment(TextAlignment.CENTER));
-            table.addCell(new Cell().add(new Paragraph(String.valueOf(hecho.getCITipoRelacion())))
+            table.addCell(new Cell().add(new Paragraph(tipoRelacionService.getTipoRelacionById(hecho.getCITipoRelacion()).getCVTitulo()))
                     .setTextAlignment(TextAlignment.CENTER));
-            table.addCell(new Cell().add(new Paragraph(String.valueOf(hecho.getCIModalidad())))
+            table.addCell(new Cell().add(new Paragraph(modalidadService.getModalidadById(hecho.getCIModalidad()).getCVTitulo()))
                     .setTextAlignment(TextAlignment.CENTER));
             table.addCell(new Cell().add(new Paragraph(String.valueOf(hecho.getCVAgresionSexual())))
                     .setTextAlignment(TextAlignment.CENTER));
-            table.addCell(new Cell().add(new Paragraph(String.valueOf(hecho.getCIIdGenerador())))
-                    .setTextAlignment(TextAlignment.CENTER));
-
+          
             // Victima: Ajustar el contenido si es un objeto completo
-            String victimaNombre = hecho.getVictima() != null ? hecho.getVictima().getCVNombre() : "No Disponible";
+            String victimaNombre = hecho.getVictima() != null ? hecho.getVictima().getCVDNI() : "No Disponible";
             table.addCell(new Cell().add(new Paragraph(victimaNombre))
                     .setTextAlignment(TextAlignment.CENTER));
 
             // Continuar con el resto de los datos
             table.addCell(new Cell().add(new Paragraph(String.valueOf(hecho.getProcesoJudicial().getCVEstado())))
                     .setTextAlignment(TextAlignment.CENTER));
-            table.addCell(new Cell().add(new Paragraph(String.valueOf(hecho.getCodigoPais())))
-                    .setTextAlignment(TextAlignment.CENTER));
             table.addCell(new Cell().add(new Paragraph(hecho.getCDFecha().toString()))
                     .setTextAlignment(TextAlignment.CENTER));
             table.addCell(new Cell().add(new Paragraph(hecho.getCVDetalles())
                     .setTextAlignment(TextAlignment.LEFT)
-                    .setFontSize(10))); // Reducir el tamaño de fuente si es necesario
+                    .setFontSize(7))); // Reducir el tamaño de fuente si es necesario
         }
 
         // Asegurar que la tabla ocupe el espacio disponible sin distorsionarse
@@ -199,125 +198,132 @@ public class HechoController {
         document.close();
     }
 
+
     @GetMapping("/hechos/excel")
-public void exportToExcel(HttpServletResponse response) throws IOException, java.io.IOException {
-    response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-    String headerKey = "Content-Disposition";
-    String headerValue = "attachment; filename=hechos_filtrados.xlsx";
-    response.setHeader(headerKey, headerValue);
+    public void exportToExcel(HttpServletResponse response) throws IOException, java.io.IOException {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=hechos_filtrados.xlsx";
+        response.setHeader(headerKey, headerValue);
 
-    // Crear un nuevo libro de trabajo de Excel
-    XSSFWorkbook workbook = new XSSFWorkbook();
-    XSSFSheet sheet = workbook.createSheet("Hechos Filtrados");
+        // Crear un nuevo libro de trabajo de Excel
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet("Hechos Filtrados");
 
-    // Crear el estilo para el encabezado (negrita y color de fondo)
-    XSSFCellStyle headerStyle = workbook.createCellStyle();
-    XSSFFont font = workbook.createFont();
-    font.setBold(true);
-    headerStyle.setFont(font);
-    headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-    headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-    headerStyle.setAlignment(HorizontalAlignment.CENTER);
-    headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-    headerStyle.setBorderBottom(BorderStyle.THIN);
-    headerStyle.setBorderTop(BorderStyle.THIN);
-    headerStyle.setBorderLeft(BorderStyle.THIN);
-    headerStyle.setBorderRight(BorderStyle.THIN);
+        // Crear el estilo para el encabezado (negrita y color de fondo)
+        XSSFCellStyle headerStyle = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setBold(true);
+        headerStyle.setFont(font);
+        headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerStyle.setAlignment(HorizontalAlignment.CENTER);
+        headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        headerStyle.setBorderBottom(BorderStyle.THIN);
+        headerStyle.setBorderTop(BorderStyle.THIN);
+        headerStyle.setBorderLeft(BorderStyle.THIN);
+        headerStyle.setBorderRight(BorderStyle.THIN);
 
-    // Crear el estilo para las celdas (bordes y alineación)
-    XSSFCellStyle cellStyle = workbook.createCellStyle();
-    cellStyle.setBorderBottom(BorderStyle.THIN);
-    cellStyle.setBorderTop(BorderStyle.THIN);
-    cellStyle.setBorderLeft(BorderStyle.THIN);
-    cellStyle.setBorderRight(BorderStyle.THIN);
-    cellStyle.setAlignment(HorizontalAlignment.LEFT);
-    cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        // Crear el estilo para las celdas (bordes y alineación)
+        XSSFCellStyle cellStyle = workbook.createCellStyle();
+        cellStyle.setBorderBottom(BorderStyle.THIN);
+        cellStyle.setBorderTop(BorderStyle.THIN);
+        cellStyle.setBorderLeft(BorderStyle.THIN);
+        cellStyle.setBorderRight(BorderStyle.THIN);
+        cellStyle.setAlignment(HorizontalAlignment.LEFT);
+        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
 
-    // Crear el estilo para las fechas
-    XSSFCellStyle dateCellStyle = workbook.createCellStyle();
-    short dateFormat = workbook.createDataFormat().getFormat("yyyy-mm-dd");
-    dateCellStyle.cloneStyleFrom(cellStyle);
-    dateCellStyle.setDataFormat(dateFormat);
+        // Crear el estilo para las fechas
+        XSSFCellStyle dateCellStyle = workbook.createCellStyle();
+        short dateFormat = workbook.createDataFormat().getFormat("yyyy-mm-dd");
+        dateCellStyle.cloneStyleFrom(cellStyle);
+        dateCellStyle.setDataFormat(dateFormat);
 
-    // Crear la fila de encabezado
-    XSSFRow headerRow = sheet.createRow(0);
-    String[] headers = { "ID", "Tipo de Víctima", "Tipo de Relación", "Modalidad", "Agresión Sexual", "Generador",
-            "Victima", "Proceso Judicial", "País", "Fecha", "Observaciones" };
-    for (int i = 0; i < headers.length; i++) {
-        XSSFCell cell = headerRow.createCell(i);
-        cell.setCellValue(headers[i]);
-        cell.setCellStyle(headerStyle); // Aplicar estilo de encabezado
+        // Crear la fila de encabezado
+        XSSFRow headerRow = sheet.createRow(0);
+        String[] headers = { "ID", "Tipo de Víctima", "Tipo de Relación", "Modalidad", "Agresión Sexual",
+                "Denuncia previa", "Generador",
+                "Victima", "Proceso Judicial", "País", "Fecha", "Detalles" };
+        for (int i = 0; i < headers.length; i++) {
+            XSSFCell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(headerStyle); // Aplicar estilo de encabezado
+        }
+
+        // Obtener la lista de hechos filtrados por país
+        Integer codigoPaisUsuario = this.usuario.getCodigoPais();
+        List<Hecho> hechos = hechoService.findByCodigoPais(codigoPaisUsuario);
+        Paises pais = paisesService.getPaisByID(codigoPaisUsuario);
+
+        // Rellenar las filas con los datos
+        int rowNum = 1;
+        for (Hecho hecho : hechos) {
+            XSSFRow row = sheet.createRow(rowNum++);
+
+            // ID
+            row.createCell(0).setCellValue(hecho.getCI_Id());
+            row.getCell(0).setCellStyle(cellStyle); // Aplicar estilo de celda
+
+            // Tipo de Víctima
+            row.createCell(1).setCellValue(tipoVictimaService.getTipoVictimaById(hecho.getCITipoVictima()).getCVTitulo());
+            row.getCell(1).setCellStyle(cellStyle);
+
+            // Tipo de Relación
+            row.createCell(2).setCellValue(tipoRelacionService.getTipoRelacionById(hecho.getCITipoRelacion()).getCVTitulo());
+            row.getCell(2).setCellStyle(cellStyle);
+
+            // Modalidad
+            row.createCell(3).setCellValue(modalidadService.getModalidadById(hecho.getCIModalidad()).getCVTitulo());
+            row.getCell(3).setCellStyle(cellStyle);
+
+            // Agresión Sexual
+            row.createCell(4).setCellValue(String.valueOf(hecho.getCVAgresionSexual()));
+            row.getCell(4).setCellStyle(cellStyle);
+
+            // Denuncia previa
+            row.createCell(5).setCellValue(String.valueOf(hecho.getCVDenunciaPrevia()));
+            row.getCell(5).setCellStyle(cellStyle);
+
+            // Generador
+            row.createCell(6).setCellValue(organismoService.getOrganismoById(hecho.getCIIdGenerador()).getCVNombre());
+            row.getCell(6).setCellStyle(cellStyle);
+
+            // Victima
+            String victimaNombre = hecho.getVictima() != null ? hecho.getVictima().getCVDNI() : "No Disponible";
+            row.createCell(7).setCellValue(victimaNombre);
+            row.getCell(7).setCellStyle(cellStyle);
+
+            // Proceso Judicial
+            row.createCell(8).setCellValue(hecho.getProcesoJudicial().getCVEstado());
+            row.getCell(8).setCellStyle(cellStyle);
+
+            // País
+            row.createCell(9).setCellValue(pais.getSpanish());
+            row.getCell(9).setCellStyle(cellStyle);
+
+            // Fecha (formato de fecha)
+            XSSFCell fechaCell = row.createCell(10);
+            fechaCell.setCellValue(hecho.getCDFecha());
+            fechaCell.setCellStyle(dateCellStyle);
+
+            // Observaciones
+            row.createCell(11).setCellValue(hecho.getCVDetalles());
+            row.getCell(11).setCellStyle(cellStyle);
+        }
+
+        // Ajustar automáticamente el ancho de las columnas
+        for (int i = 0; i < headers.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        // Escribir el archivo Excel a la respuesta
+        try (ServletOutputStream outputStream = response.getOutputStream()) {
+            workbook.write(outputStream);
+        }
+        workbook.close();
     }
 
-    // Obtener la lista de hechos filtrados por país
-    Integer codigoPaisUsuario = this.usuario.getCodigoPais();
-    List<Hecho> hechos = hechoService.findByCodigoPais(codigoPaisUsuario);
-
-    // Rellenar las filas con los datos
-    int rowNum = 1;
-    for (Hecho hecho : hechos) {
-        XSSFRow row = sheet.createRow(rowNum++);
-
-        // ID
-        row.createCell(0).setCellValue(hecho.getCI_Id());
-        row.getCell(0).setCellStyle(cellStyle); // Aplicar estilo de celda
-
-        // Tipo de Víctima
-        row.createCell(1).setCellValue(String.valueOf(hecho.getCITipoVictima()));
-        row.getCell(1).setCellStyle(cellStyle);
-
-        // Tipo de Relación
-        row.createCell(2).setCellValue(String.valueOf(hecho.getCITipoRelacion()));
-        row.getCell(2).setCellStyle(cellStyle);
-
-        // Modalidad
-        row.createCell(3).setCellValue(String.valueOf(hecho.getCIModalidad()));
-        row.getCell(3).setCellStyle(cellStyle);
-
-        // Agresión Sexual
-        row.createCell(4).setCellValue(String.valueOf(hecho.getCVAgresionSexual()));
-        row.getCell(4).setCellStyle(cellStyle);
-
-        // Generador
-        row.createCell(5).setCellValue(String.valueOf(hecho.getCIIdGenerador()));
-        row.getCell(5).setCellStyle(cellStyle);
-
-        // Victima
-        String victimaNombre = hecho.getVictima() != null ? hecho.getVictima().getCVNombre() : "No Disponible";
-        row.createCell(6).setCellValue(victimaNombre);
-        row.getCell(6).setCellStyle(cellStyle);
-
-        // Proceso Judicial
-        row.createCell(7).setCellValue(hecho.getProcesoJudicial().getCVEstado());
-        row.getCell(7).setCellStyle(cellStyle);
-
-        // País
-        row.createCell(8).setCellValue(String.valueOf(hecho.getCodigoPais()));
-        row.getCell(8).setCellStyle(cellStyle);
-
-        // Fecha (formato de fecha)
-        XSSFCell fechaCell = row.createCell(9);
-        fechaCell.setCellValue(hecho.getCDFecha());
-        fechaCell.setCellStyle(dateCellStyle);
-
-        // Observaciones
-        row.createCell(10).setCellValue(hecho.getCVDetalles());
-        row.getCell(10).setCellStyle(cellStyle);
-    }
-
-    // Ajustar automáticamente el ancho de las columnas
-    for (int i = 0; i < headers.length; i++) {
-        sheet.autoSizeColumn(i);
-    }
-
-    // Escribir el archivo Excel a la respuesta
-    try (ServletOutputStream outputStream = response.getOutputStream()) {
-        workbook.write(outputStream);
-    }
-    workbook.close();
-}
-
-
+    
     private void validarPerfil() {
 
         try {
@@ -360,6 +366,9 @@ public void exportToExcel(HttpServletResponse response) throws IOException, java
         Integer codigoPaisUsuario = this.usuario.getCodigoPais();
         List<Hecho> hechosFiltrados = hechoService.findByCodigoPais(codigoPaisUsuario);
 
+        // Buscar el país por el código del país almacenado en Hecho
+        Paises pais = paisesService.getPaisByID(codigoPaisUsuario);
+
         int numeroTotalElementos = hechosFiltrados.size();
 
         Pageable pageable = initPages(pg, 5, numeroTotalElementos);
@@ -379,7 +388,7 @@ public void exportToExcel(HttpServletResponse response) throws IOException, java
         model.addAttribute("PaginaActual", pg);
         model.addAttribute("nPaginas", nPaginas);
         model.addAttribute("hechos", hechosPaginados);
-        model.addAttribute("paises", hechoService.getAllPaisesPage(pageable));
+        model.addAttribute("nombrePais", pais.getSpanish());
         model.addAttribute("modalidades", hechoService.getAllModalidadesPage(pageable));
         model.addAttribute("organismos", hechoService.getAllOrganismosPage(pageable));
         model.addAttribute("tipoVictimas", hechoService.getAllTipoVictimasPage(pageable));

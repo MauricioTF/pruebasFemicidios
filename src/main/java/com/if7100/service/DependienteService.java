@@ -5,6 +5,7 @@ import java.util.List;
 import com.if7100.entity.Dependiente;
 import com.if7100.entity.DependienteVictima;
 import com.if7100.entity.TipoRelacionFamiliar;
+import com.if7100.entity.Victima;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 
 public interface DependienteService
 {
+
+	List<Dependiente> findAllDependientesConRelacionesYVictimas();
 
 	List<DependienteVictima> findBydependiente(Dependiente dependiente);
 

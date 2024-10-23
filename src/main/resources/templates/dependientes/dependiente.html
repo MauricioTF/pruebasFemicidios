@@ -39,28 +39,24 @@
                                 </thead>
                                 <tbody class="text-center">
                                     <!-- Iterar sobre el Map de dependientes y sus víctimas -->
-                                    <tr th:each="entry : ${dependienteVictimasMap}">
+                                    <tr th:each="dependiente : ${dependientes}">
                                         <!-- Acceder a la información del dependiente (entry.key) -->
-                                        <td th:text="${entry.key.CI_Codigo}"></td>
-                                        <td th:text="${entry.key.CVDNI}"></td>
-                                        <td th:text="${tipoRelacionesFamiliares.get(entryStat.index).nombre}"></td>
+                                        <td th:text="${dependiente.CI_Codigo}"></td>
+                                        <td th:text="${dependiente.CVDNI}"></td>
+                                        <td th:text="${dependiente.tipoRelacionFamiliar.nombre}"></td>
+                                        <td th:text="${dependienteVictimaMap[dependiente.CI_Codigo]?.CVNombre}">Nombre de la víctima</td>
 
-                                        <!-- Mostrar la lista de víctimas asociadas (entry.value) -->
-                                        <td>
-                                            <ul>
-                                                <li th:each="victima : ${entry.value}" th:text="${victima.CVNombre}"></li>
-                                            </ul>
-                                        </td>
+                                        
                             
                                         <!-- Acciones (Actualizar/Eliminar) -->
                                         <td class="text-center align-middle h-50">
                                             <a class="btn btnMaterial btn-flat success" role="button"
-                                               th:href="@{/dependientes/edit/{id}(id=${entry.key.CI_Codigo})}">
+                                               th:href="@{/dependientes/edit/{id}(id=${dependiente.CI_Codigo})}">
                                                 <i class="fas fa-pen"></i>
                                             </a>
                                             <a class="btn btnMaterial btn-flat accent btnNoBorders checkboxHover ms-1"
                                                role="button"
-                                               th:href="@{/dependientes/{id}(id=${entry.key.CI_Codigo})}">
+                                               th:href="@{/dependientes/{id}(id=${dependiente.CI_Codigo})}">
                                                 <i class="fas fa-trash btnNoBorders"></i>
                                             </a>
                                         </td>
@@ -92,6 +88,8 @@
                 </div>
             </div>
         </div>
+        <a th:href="@{/dependiente/excel}" class="btn btn-primary">Descargar Excel</a>
+
     </section>
 </main>
 

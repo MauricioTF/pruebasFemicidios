@@ -40,7 +40,7 @@ public class OrientacionSexualServiceImpl implements OrientacionSexualService {
 
 
 	@Override
-	public OrientacionSexual getOrientacionSexualByCodigo(int codigo) {
+	public OrientacionSexual getOrientacionSexualByCodigo(Integer codigo) {
 		// TODO Auto-generated method stub
 		return orientacionRepository.findById(codigo).get();
 	}
@@ -54,7 +54,7 @@ public class OrientacionSexualServiceImpl implements OrientacionSexualService {
 
 
 	@Override
-	public void deleteOrientacionSexualByCodigo(int codigo) {
+	public void deleteOrientacionSexualByCodigo(Integer codigo) {
 		// TODO Auto-generated method stub
 		orientacionRepository.deleteById(codigo);
 	}

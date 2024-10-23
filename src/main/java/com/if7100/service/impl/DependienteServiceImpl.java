@@ -46,6 +46,12 @@ public class DependienteServiceImpl implements DependienteService{
 	}
 
 	@Override
+    public List<Dependiente> findAllDependientesConRelacionesYVictimas() {
+        return dependienteRepository.findAllDependientesConRelacionesYVictimas();
+    }
+
+	
+	@Override
     public List<DependienteVictima> findBydependiente(Dependiente dependiente) {
         return dependienteVictimaRepository.findBydependiente(dependiente);
     }
@@ -69,7 +75,7 @@ public class DependienteServiceImpl implements DependienteService{
         TipoRelacionFamiliar tipoRelacionFamiliar = new TipoRelacionFamiliar();
         for (Dependiente dependiente :
         	dependientes) {
-            tipoRelaciones.add(tipoRelacionFamiliarRepository.findById(dependiente.getCI_Tiporelacion()).orElse(tipoRelacionFamiliar));
+            tipoRelaciones.add(tipoRelacionFamiliarRepository.findById(dependiente.getTipoRelacionFamiliar().getCI_Codigo()).orElse(tipoRelacionFamiliar));
         }
 
         return tipoRelaciones;
@@ -82,7 +88,7 @@ public class DependienteServiceImpl implements DependienteService{
         TipoRelacionFamiliar tipoRelacionFamiliar = new TipoRelacionFamiliar();
         for (Dependiente dependiente :
         	dependientes) {
-            tipoRelaciones.add(tipoRelacionFamiliarRepository.findById(dependiente.getCI_Tiporelacion()).orElse(tipoRelacionFamiliar));
+            tipoRelaciones.add(tipoRelacionFamiliarRepository.findById(dependiente.getTipoRelacionFamiliar().getCI_Codigo()).orElse(tipoRelacionFamiliar));
         }
         return tipoRelaciones;
     }

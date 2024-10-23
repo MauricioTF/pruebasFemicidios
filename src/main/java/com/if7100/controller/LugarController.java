@@ -2,10 +2,32 @@ package com.if7100.controller;
 
 import com.if7100.entity.*;
 import com.if7100.service.*;
+import com.itextpdf.io.IOException;
+import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.property.TextAlignment;
+import com.itextpdf.layout.property.UnitValue;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -23,6 +45,8 @@ import org.springframework.web.bind.annotation.*;
  */
 import com.if7100.repository.UsuarioRepository;
 
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -54,6 +78,211 @@ public class LugarController {
 		this.usuarioRepository = usuarioRepository;
 		this.bitacoraService = bitacoraService;
 
+	}
+
+	@GetMapping("/lugar/pdf")
+	public void exportToPDF(HttpServletResponse response) throws IOException, java.io.IOException {
+		response.setContentType("application/pdf");
+		String headerKey = "Content-Disposition";
+		String headerValue = "attachment; filename=lugares_filtrados.pdf";
+		response.setHeader(headerKey, headerValue);
+
+		// Crear el documento PDF usando iText 7
+		PdfWriter pdfWriter = new PdfWriter(response.getOutputStream());
+		PdfDocument pdfDoc = new PdfDocument(pdfWriter);
+		Document document = new Document(pdfDoc);
+
+		// Agregar márgenes al documento (izquierda, derecha, arriba, abajo)
+		document.setMargins(20, 20, 20, 20);
+
+		// Agregar un título en negrita y centrado al documento
+		Paragraph title = new Paragraph("Reporte de lugar")
+				.setTextAlignment(TextAlignment.CENTER)
+				.setFontSize(18)
+				.setBold();
+		document.add(title);
+
+		// Agregar un subtítulo
+		Paragraph subTitle = new Paragraph("lugares filtrados por país")
+				.setTextAlignment(TextAlignment.CENTER)
+				.setFontSize(12)
+				.setItalic();
+		document.add(subTitle);
+
+		// Espacio después del título
+		document.add(new Paragraph("\n"));
+
+		// Crear una tabla con columnas ajustadas dinámicamente
+		Table table = new Table(UnitValue.createPercentArray(new float[] { 1, 1, 1, 1, 1, 1, 1, 2 }));
+		table.setWidth(UnitValue.createPercentValue(100)); // Ajustar al 100% del ancho de la página
+
+		// Agregar encabezado de tabla con estilo
+		String[] headers = { "ID", "Hecho", "Descripción", "Tipo de lugar", "Código postal",
+				"Provincia", "Cantón", "Distrito" };
+		for (String header : headers) {
+			table.addHeaderCell(new Cell().add(new Paragraph(header).setBold())
+					.setTextAlignment(TextAlignment.CENTER)
+					.setBackgroundColor(ColorConstants.LIGHT_GRAY));
+		}
+
+		// Obtener la lista de hechos filtrados por país
+		Integer codigoPaisUsuario = this.usuario.getCodigoPais();
+		List<Lugar> lugares = lugarService.getLugarByCodigoPaisUsuario(codigoPaisUsuario);
+
+		// Recorrer los hechos y agregarlos a la tabla
+		for (Lugar lugar : lugares) {
+
+			table.addCell(new Cell().add(new Paragraph(String.valueOf(lugar.getCI_Codigo())))
+					.setTextAlignment(TextAlignment.CENTER));
+
+			table.addCell(new Cell().add(new Paragraph(String.valueOf(lugar.getCIHecho())))
+					.setTextAlignment(TextAlignment.CENTER));
+
+			table.addCell(new Cell().add(new Paragraph(lugar.getCV_Descripcion()))
+					.setTextAlignment(TextAlignment.CENTER));
+
+			table.addCell(new Cell()
+					.add(new Paragraph(tipoLugarService.getTipoLugarByCodigo(lugar.getCITipoLugar()).getCVTitulo()))
+					.setTextAlignment(TextAlignment.CENTER));
+
+			table.addCell(new Cell().add(new Paragraph(String.valueOf(lugar.getCI_Codigo_Postal())))
+					.setTextAlignment(TextAlignment.CENTER));
+
+			table.addCell(new Cell().add(new Paragraph(String.valueOf(lugar.getCVProvincia())))
+					.setTextAlignment(TextAlignment.CENTER));
+
+			table.addCell(new Cell().add(new Paragraph(String.valueOf(lugar.getCVCanton())))
+					.setTextAlignment(TextAlignment.CENTER));
+
+			table.addCell(new Cell().add(new Paragraph(lugar.getCVDistrito()))
+					.setTextAlignment(TextAlignment.CENTER));
+			
+		}
+
+		// Asegurar que la tabla ocupe el espacio disponible sin distorsionarse
+		table.setAutoLayout();
+
+		// Agregar la tabla al documento
+		document.add(table);
+
+		// Cerrar el documento
+		document.close();
+	}
+
+	@GetMapping("/lugar/excel")
+	public void exportToExcel(HttpServletResponse response) throws IOException, java.io.IOException {
+		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		String headerKey = "Content-Disposition";
+		String headerValue = "attachment; filename=lugares_filtrados.xlsx";
+		response.setHeader(headerKey, headerValue);
+
+		// Crear un nuevo libro de trabajo de Excel
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		XSSFSheet sheet = workbook.createSheet("Lugares Filtrados");
+
+		// Crear el estilo para el encabezado (negrita y color de fondo)
+		XSSFCellStyle headerStyle = workbook.createCellStyle();
+		XSSFFont font = workbook.createFont();
+		font.setBold(true);
+		headerStyle.setFont(font);
+		headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+		headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		headerStyle.setAlignment(HorizontalAlignment.CENTER);
+		headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+		headerStyle.setBorderBottom(BorderStyle.THIN);
+		headerStyle.setBorderTop(BorderStyle.THIN);
+		headerStyle.setBorderLeft(BorderStyle.THIN);
+		headerStyle.setBorderRight(BorderStyle.THIN);
+
+		// Crear el estilo para las celdas (bordes y alineación)
+		XSSFCellStyle cellStyle = workbook.createCellStyle();
+		cellStyle.setBorderBottom(BorderStyle.THIN);
+		cellStyle.setBorderTop(BorderStyle.THIN);
+		cellStyle.setBorderLeft(BorderStyle.THIN);
+		cellStyle.setBorderRight(BorderStyle.THIN);
+		cellStyle.setAlignment(HorizontalAlignment.LEFT);
+		cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+		// Crear el estilo para las fechas
+		XSSFCellStyle dateCellStyle = workbook.createCellStyle();
+		short dateFormat = workbook.createDataFormat().getFormat("yyyy-mm-dd");
+		dateCellStyle.cloneStyleFrom(cellStyle);
+		dateCellStyle.setDataFormat(dateFormat);
+
+		// Crear la fila de encabezado
+		XSSFRow headerRow = sheet.createRow(0);
+		String[] headers = { "ID", "Hecho", "Descripción", "Tipo de lugar", "Dirección",
+				"Ciudad", "Código postal",
+				"Provincia", "Cantón", "Distrito" };
+		for (int i = 0; i < headers.length; i++) {
+			XSSFCell cell = headerRow.createCell(i);
+			cell.setCellValue(headers[i]);
+			cell.setCellStyle(headerStyle); // Aplicar estilo de encabezado
+		}
+
+		// Obtener la lista de lugares filtrados por país
+		Integer codigoPaisUsuario = this.usuario.getCodigoPais();
+
+		List<Lugar> lugares = lugarService.getLugarByCodigoPaisUsuario(codigoPaisUsuario);
+
+		// Rellenar las filas con los datos
+		int rowNum = 1;
+		for (Lugar lugar : lugares) {
+			XSSFRow row = sheet.createRow(rowNum++);
+
+			// ID
+			row.createCell(0).setCellValue(lugar.getCI_Codigo());
+			row.getCell(0).setCellStyle(cellStyle); // Aplicar estilo de celda
+
+			// Tipo de Víctima
+			row.createCell(1)
+					.setCellValue(lugar.getCIHecho());
+			row.getCell(1).setCellStyle(cellStyle);
+
+			// Tipo de Relación
+			row.createCell(2)
+					.setCellValue(lugar.getCV_Descripcion());
+			row.getCell(2).setCellStyle(cellStyle);
+
+			// Modalidad
+			row.createCell(3).setCellValue(tipoLugarService.getTipoLugarByCodigo(lugar.getCITipoLugar()).getCVTitulo());
+			row.getCell(3).setCellStyle(cellStyle);
+
+			// Agresión Sexual
+			row.createCell(4).setCellValue(lugar.getCV_Direccion());
+			row.getCell(4).setCellStyle(cellStyle);
+
+			// Denuncia previa
+			row.createCell(5).setCellValue(lugar.getCV_Ciudad());
+			row.getCell(5).setCellStyle(cellStyle);
+
+			// Generador
+			row.createCell(6).setCellValue(lugar.getCI_Codigo_Postal());
+			row.getCell(6).setCellStyle(cellStyle);
+
+			// Proceso Judicial
+			row.createCell(7).setCellValue(lugar.getCVProvincia());
+			row.getCell(7).setCellStyle(cellStyle);
+
+			// País
+			row.createCell(8).setCellValue(lugar.getCVCanton());
+			row.getCell(8).setCellStyle(cellStyle);
+
+			// Observaciones
+			row.createCell(9).setCellValue(lugar.getCVDistrito());
+			row.getCell(9).setCellStyle(cellStyle);
+		}
+
+		// Ajustar automáticamente el ancho de las columnas
+		for (int i = 0; i < headers.length; i++) {
+			sheet.autoSizeColumn(i);
+		}
+
+		// Escribir el archivo Excel a la respuesta
+		try (ServletOutputStream outputStream = response.getOutputStream()) {
+			workbook.write(outputStream);
+		}
+		workbook.close();
 	}
 
 	private void validarPerfil() {
@@ -232,23 +461,33 @@ public class LugarController {
 
 	@GetMapping("/lugar/{pg}")
 	public String listLugar(Model model, @PathVariable Integer pg) {
-		if (pg < 1) {
-			return "redirect:/lugar/1";
-		}
 
-		int numeroTotalElementos = lugarService.getAllLugar().size();
+		this.validarPerfil();
+
+		Integer codigoPaisUsuario = this.usuario.getCodigoPais();
+
+		// Obtener los procesos judiciales filtrados por el código de país
+		List<Lugar> lugaresFiltrados = lugarService.getLugarByCodigoPaisUsuario(codigoPaisUsuario);
+
+		int numeroTotalElementos = lugaresFiltrados.size();
 
 		Pageable pageable = initPages(pg, 5, numeroTotalElementos);
 
-		Page<Lugar> lugarPage = lugarService.getAllLugarPage(pageable);
+		int tamanoPagina = pageable.getPageSize();
+		int numeroPagina = pageable.getPageNumber();
 
-		List<Integer> nPaginas = IntStream.rangeClosed(1, lugarPage.getTotalPages())
+		List<Lugar> lugaresPaginados = lugaresFiltrados.stream()
+				.skip((long) numeroPagina * tamanoPagina)
+				.limit(tamanoPagina)
+				.collect(Collectors.toList());
+
+		List<Integer> nPaginas = IntStream.rangeClosed(1, (int) Math.ceil((double) numeroTotalElementos / tamanoPagina))
 				.boxed()
 				.toList();
 
 		model.addAttribute("PaginaActual", pg);
 		model.addAttribute("nPaginas", nPaginas);
-		model.addAttribute("lugares", lugarPage.getContent());
+		model.addAttribute("lugares", lugaresPaginados);
 		model.addAttribute("lugar", true);
 		model.addAttribute("tipoLugares", lugarService.getAllTipoLugars());
 		return "lugares/lugares";
@@ -261,29 +500,35 @@ public class LugarController {
 
 	@GetMapping("/hecholugar/{id}/{pg}")
 	public String listHechoLugar(Model model, @PathVariable Integer id, @PathVariable Integer pg) {
-		/*
-		 * if (pg < 1){
-		 * return "redirect:/hecholugar/".concat(String.valueOf(id)).concat("/1");
-		 * }
-		 */
+		this.validarPerfil();
 
-		
-		 int numeroTotalElementos = lugarService.getAllLugar().size();
+		Integer codigoPaisUsuario = this.usuario.getCodigoPais();
 
-		 Pageable pageable = initPages(pg, 5, numeroTotalElementos);
- 
-		 Page<Lugar> lugarPage = lugarService.getAllLugarPage(pageable);
- 
-		 List<Integer> nPaginas = IntStream.rangeClosed(1, lugarPage.getTotalPages())
-				 .boxed()
-				 .toList();
- 
-		 model.addAttribute("PaginaActual", pg);
-		 model.addAttribute("nPaginas", nPaginas);
-		 model.addAttribute("lugares", lugarPage.getContent());
-		 model.addAttribute("lugar", true);
-		 model.addAttribute("tipoLugares", lugarService.getAllTipoLugars());
-		 return "lugares/lugares";
+		// Obtener los procesos judiciales filtrados por el código de país
+		List<Lugar> lugaresFiltrados = lugarService.getLugarByCodigoPaisUsuario(codigoPaisUsuario);
+
+		int numeroTotalElementos = lugaresFiltrados.size();
+
+		Pageable pageable = initPages(pg, 5, numeroTotalElementos);
+
+		int tamanoPagina = pageable.getPageSize();
+		int numeroPagina = pageable.getPageNumber();
+
+		List<Lugar> lugaresPaginados = lugaresFiltrados.stream()
+				.skip((long) numeroPagina * tamanoPagina)
+				.limit(tamanoPagina)
+				.collect(Collectors.toList());
+
+		List<Integer> nPaginas = IntStream.rangeClosed(1, (int) Math.ceil((double) numeroTotalElementos / tamanoPagina))
+				.boxed()
+				.toList();
+
+		model.addAttribute("PaginaActual", pg);
+		model.addAttribute("nPaginas", nPaginas);
+		model.addAttribute("lugares", lugaresPaginados);
+		model.addAttribute("lugar", true);
+		model.addAttribute("tipoLugares", lugarService.getAllTipoLugars());
+		return "lugares/lugares";
 	}
 
 	// Este Metodo esta bueno pero solo sirve si selecciona ver la lista de lugares

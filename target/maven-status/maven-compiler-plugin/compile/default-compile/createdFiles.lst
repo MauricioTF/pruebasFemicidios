@@ -54,6 +54,7 @@ com\if7100\entity\HechoImputado.class
 com\if7100\service\impl\LugarServiceImpl.class
 com\if7100\service\ProcesoJudicialService.class
 com\if7100\controller\HechoImputadoController.class
+com\if7100\util\ExportExcelUtil.class
 com\if7100\entity\TipoRelacionFamiliar.class
 com\if7100\repository\TipoLugarRepository.class
 com\if7100\entity\TipoVictima.class

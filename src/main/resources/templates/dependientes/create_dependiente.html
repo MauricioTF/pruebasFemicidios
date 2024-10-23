@@ -29,7 +29,7 @@
                         <div class="col">
                             <div class="mb-3 mx-3"><label class="form-label" for="name">Seleccione el tipo de relacion
                                     familiar del dependiente
-                                </label><select th:name="tipoRelacionFamiliar" th:field="*{CI_Tiporelacion}"
+                                </label><select th:name="tipoRelacionFamiliar" th:field="*{tipoRelacionFamiliar}"
                                     onfocus="ocultarError()" id="name-2" class="form-select" required>
                                     <optgroup label="Relacion del dependiente">
                                         <option th:each="relacionFamiliar: ${tipoRelacionFamiliar}"

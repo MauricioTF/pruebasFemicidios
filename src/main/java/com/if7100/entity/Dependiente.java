@@ -11,6 +11,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -25,16 +27,21 @@ public class Dependiente {
 	@Column(name="CV_Dni", nullable =false)
 	private String CVDNI;
 	
-	@Column(name="CI_Tiporelacion", nullable =false)
-	private int CI_Tiporelacion;
+	
+    @ManyToOne
+    @JoinColumn(name = "CI_Tiporelacion",referencedColumnName = "CI_Codigo", nullable = false)
+    private TipoRelacionFamiliar tipoRelacionFamiliar;
+
+	@OneToMany(mappedBy = "dependiente")
+    private List<DependienteVictima> dependienteVictimas;
 
 	public Dependiente(  ) {}
 
-	public Dependiente(int CI_Codigo, String cVDNI, int cI_Tiporelacion) {
+	public Dependiente(int CI_Codigo, String cVDNI, TipoRelacionFamiliar tipoRelacionFamiliar) {
 		super();
 		this.CI_Codigo = CI_Codigo;
 		CVDNI = cVDNI;
-		CI_Tiporelacion = cI_Tiporelacion;
+		this.tipoRelacionFamiliar = tipoRelacionFamiliar;
 	}
 
 	public int getCI_Codigo() {
@@ -53,12 +60,12 @@ public class Dependiente {
 		CVDNI = cVDNI;
 	}
 
-	public int getCI_Tiporelacion() {
-		return CI_Tiporelacion;
+	public TipoRelacionFamiliar getTipoRelacionFamiliar() {
+		return tipoRelacionFamiliar;
 	}
 
-	public void setCI_Tiporelacion(int cI_Tiporelacion) {
-		CI_Tiporelacion = cI_Tiporelacion;
+	public void setTipoRelacionFamiliar(TipoRelacionFamiliar tipoRelacionFamiliar) {
+		this.tipoRelacionFamiliar = tipoRelacionFamiliar;
 	}
 
 }

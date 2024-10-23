@@ -31,7 +31,7 @@ public class VictimaControllerTest {
     private String etnia = "Blanca";
 
     private Victima victima = new Victima(CVDNI, CVNombre, CVApellidoPaterno, CVApellidoMaterno, CVEdad, CVGenero, CVLugarNac, CVOrientaSex, nacionalidad, educacion,
-            profesion, domicilio, "Limon", discapacidad, "Todo bien", etnia, "Ninguna", "Ninguna", 0, "Nada");
+            profesion, domicilio, "Limon", discapacidad, "Todo bien", etnia, "Ninguna", "Ninguna", 0, "Nada", 2);
 
     //private Victima victima = new Victima (CVDNI,"Albertina","Chill","Pepper", 30,2, "Cartago", 3, "Costarricense", 2, "Cruz Rojista", "Limon centro", "Limon", "Ninguna", "Todo bien", "Mestizo", "Ninguna", "Ninguna", 0, "Nada");
 

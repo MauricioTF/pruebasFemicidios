@@ -2,6 +2,7 @@ package com.if7100.service;
 
 import java.util.List;
 import com.if7100.entity.Lugar;
+import com.if7100.entity.ProcesoJudicial;
 import com.if7100.entity.TipoLugar;
 
 import org.springframework.data.domain.Page;
@@ -13,6 +14,8 @@ import org.springframework.data.domain.Pageable;
  */
 
 public interface LugarService {
+
+     List<Lugar> getLugarByCodigoPaisUsuario(Integer codigoPaisUsuario);
 
     List<Lugar> getAllLugares(Integer CI_Hecho);
 

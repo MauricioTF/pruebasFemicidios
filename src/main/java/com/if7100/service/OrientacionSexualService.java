@@ -18,11 +18,11 @@ public interface OrientacionSexualService {
 
  OrientacionSexual saveOrientacionSexual(OrientacionSexual usuario);
  
- OrientacionSexual getOrientacionSexualByCodigo(int codigo);
+ OrientacionSexual getOrientacionSexualByCodigo(Integer codigo);
 
  OrientacionSexual updateOrientacionSexual(OrientacionSexual orientacion);
  
- void deleteOrientacionSexualByCodigo(int codigo);
+ void deleteOrientacionSexualByCodigo(Integer codigo);
  
  OrientacionSexual getOrientacionSexualByCVTitulo(String CV_Titulo);
 

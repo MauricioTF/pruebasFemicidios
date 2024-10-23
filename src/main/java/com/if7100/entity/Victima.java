@@ -82,6 +82,9 @@ public class Victima {
 	@Column(name="CV_Generador", nullable =false)
 	private String CVGenerador;
 
+	@Column(name="codigo_pais", nullable =false)
+	private Integer CICodigoPais;
+
 	@OneToMany(mappedBy = "victima")
     private List<Hecho> hechos;
 	
@@ -94,7 +97,7 @@ public class Victima {
 			int cIEdad, int cVGenero, String cVLugarNac, int cVOrientaSex, String CVNacionalidad, 
 			int CIEducacion, String CVOcupacion, String CVDomicilio, String CVLugarResidencia, 
 			String CVDiscapacidad, String CVCondicionMigratoria, String CVEtnia, String CVMedidasProteccion, 
-			String CVDenunciasPrevias, int CIHijos, String CVGenerador) {
+			String CVDenunciasPrevias, int CIHijos, String CVGenerador, Integer CICodigoPais) {
 		super();
 		
 		CVDNI = cVDNI;
@@ -117,9 +120,18 @@ public class Victima {
 		this.CVDenunciasPrevias = CVDenunciasPrevias;
 		this.CIHijos = CIHijos;
 		this.CVGenerador = CVGenerador;		
+		this.CICodigoPais = CICodigoPais;
 		
 	}
 
+	public int getCICodigoPais() {
+		return CICodigoPais;
+	}
+
+
+	public void setCICodigoPais(int CICodigoPais) {
+		this.CICodigoPais = CICodigoPais;
+	}
 
 	public int getCI_Id() {
 		return CI_Id;
