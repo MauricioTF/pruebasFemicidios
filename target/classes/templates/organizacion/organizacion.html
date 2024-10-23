@@ -5,10 +5,13 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Organizacion</title>
+	<script th:src="@{/HechoScripts/HechoScript.js}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 	<th th:insert="~{header}"></th>
 </head>
 
-<body>
+<body onload="ocultarError()">
 
 	<main class="page">
 		<section class="p-5">
@@ -24,6 +27,11 @@
 									Organización</a></div>
 						</div>
 					</div>
+
+					<div id="error-message" th:if="${error}" class="alert alert-danger" role="alert">
+                        <p th:text="${error_message}"></p>
+                    </div>
+
 					<div class="row">
 						<div class="col-12">
 							<div class="table-responsive max-height-table">
@@ -46,6 +54,8 @@
 											<td th:text="${organizacion.CVDireccion}"></td>
 											<td th:text="${organizacion.CVTelefono}"></td>
 											<td th:text="${organizacion.CVCorreo}"></td>
+											<td th:text="${nombrePais}"></td>
+
 											
 											<td class="text-center align-middle h-50"><a
 													class="btn btnMaterial btn-flat success" role="button"

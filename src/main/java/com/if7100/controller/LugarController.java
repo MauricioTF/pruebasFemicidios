@@ -172,6 +172,8 @@ public class LugarController {
 	@GetMapping("/lugar/excel")
 	public void exportToExcel(HttpServletResponse response) throws IOException, java.io.IOException {
 		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		
+		this.validarPerfil();
 		String headerKey = "Content-Disposition";
 		String headerValue = "attachment; filename=lugares_filtrados.xlsx";
 		response.setHeader(headerKey, headerValue);

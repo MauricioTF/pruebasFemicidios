@@ -1,6 +1,7 @@
 package com.if7100.controller;
 
-import com.if7100.entity.Bitacora; 
+import com.if7100.entity.Bitacora;
+import com.if7100.entity.Imputado;
 import com.if7100.entity.Usuario;
 import com.if7100.service.BitacoraService;
 
@@ -33,6 +34,15 @@ import com.if7100.repository.UsuarioRepository;
 import com.if7100.service.PerfilService;
 import com.if7100.service.ProcesoJudicialService;
 import com.itextpdf.io.IOException;
+import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.property.TextAlignment;
+import com.itextpdf.layout.property.UnitValue;
 
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
@@ -62,11 +72,97 @@ private Usuario usuario;
      this.bitacoraService= bitacoraService;
 
  }
+
+ @GetMapping("/procesojudicial/pdf")
+    public void exportToPDF(HttpServletResponse response) throws IOException, java.io.IOException {
+        response.setContentType("application/pdf");
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=procesosjudiciales_filtrados.pdf";
+        response.setHeader(headerKey, headerValue);
+
+        // Crear el documento PDF usando iText 7
+        PdfWriter pdfWriter = new PdfWriter(response.getOutputStream());
+        PdfDocument pdfDoc = new PdfDocument(pdfWriter);
+        Document document = new Document(pdfDoc);
+
+        // Agregar márgenes al documento (izquierda, derecha, arriba, abajo)
+        document.setMargins(20, 20, 20, 20);
+
+        // Agregar un título en negrita y centrado al documento
+        Paragraph title = new Paragraph("Reporte de Procesos Judiciales")
+                .setTextAlignment(TextAlignment.CENTER)
+                .setFontSize(18)
+                .setBold();
+        document.add(title);
+
+        // Agregar un subtítulo
+        Paragraph subTitle = new Paragraph("Procesos judiciales filtrados por país")
+                .setTextAlignment(TextAlignment.CENTER)
+                .setFontSize(12)
+                .setItalic();
+        document.add(subTitle);
+
+        // Espacio después del título
+        document.add(new Paragraph("\n"));
+
+        // Crear una tabla con columnas ajustadas dinámicamente
+        Table table = new Table(UnitValue.createPercentArray(new float[] { 1, 1, 1, 1, 1, 2 }));
+        table.setWidth(UnitValue.createPercentValue(100)); // Ajustar al 100% del ancho de la página
+
+        // Agregar encabezado de tabla con estilo
+        String[] headers = { "ID", "Estado", "Fecha de apertura", "Cantidad de personas imputadas", "Agravantes",
+		"Tipo de delito"};
+
+        for (String header : headers) {
+            table.addHeaderCell(new Cell().add(new Paragraph(header).setBold())
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setBackgroundColor(ColorConstants.LIGHT_GRAY));
+        }
+
+        // Obtener la lista de imputados filtrados por país
+        Integer codigoPaisUsuario = this.usuario.getCodigoPais();
+        List<ProcesoJudicial> procesoJudiciales = procesoJudicialService.getProcesosJudicialesByCodigoPaisUsuario(codigoPaisUsuario);
+
+        // Recorrer los imputados y agregarlos a la tabla
+        for (ProcesoJudicial procesoJudicial : procesoJudiciales) {
+
+            table.addCell(new Cell().add(new Paragraph(String.valueOf(procesoJudicial.getCI_Id())))
+                    .setTextAlignment(TextAlignment.CENTER));
+
+            table.addCell(new Cell().add(new Paragraph(procesoJudicial.getCVEstado()))
+                    .setTextAlignment(TextAlignment.CENTER));
+
+            table.addCell(new Cell().add(new Paragraph(procesoJudicial.getCDFechaApertura().toString()))
+                    .setTextAlignment(TextAlignment.CENTER));
+
+			table.addCell(new Cell().add(new Paragraph(String.valueOf(procesoJudicial.getCIPersonasImputadas())))
+                    .setTextAlignment(TextAlignment.CENTER));
+
+            table.addCell(new Cell().add(new Paragraph(procesoJudicial.getCVAgravantes()))
+                    .setTextAlignment(TextAlignment.CENTER));
+
+            table.addCell(new Cell().add(new Paragraph(procesoJudicial.getCVTipoDelito()))//
+                    .setTextAlignment(TextAlignment.CENTER));
+          
+        }
+
+        // Asegurar que la tabla ocupe el espacio disponible sin distorsionarse
+        table.setAutoLayout();
+
+        // Agregar la tabla al documento
+        document.add(table);
+
+        // Cerrar el documento
+        document.close();
+    }
+
  
  @GetMapping("/procesojudicial/excel")
     public void exportToExcel(HttpServletResponse response) throws IOException, java.io.IOException {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        String headerKey = "Content-Disposition";
+        
+		this.validarPerfil();
+		String headerKey = "Content-Disposition";
         String headerValue = "attachment; filename=procesosjudiciales_filtrados.xlsx";
         response.setHeader(headerKey, headerValue);
 

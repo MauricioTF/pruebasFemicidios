@@ -37,6 +37,15 @@ import com.if7100.service.PerfilService;
 import com.if7100.service.TipoRelacionFamiliarService;
 import com.if7100.service.VictimaService;
 import com.itextpdf.io.IOException;
+import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.property.TextAlignment;
+import com.itextpdf.layout.property.UnitValue;
 
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
@@ -91,6 +100,101 @@ public class DependienteController {
 		this.victimaService = victimaservice;
 	}
 
+	@GetMapping("/dependiente/pdf")
+	public void exportToPDF(HttpServletResponse response) throws IOException, java.io.IOException {
+		response.setContentType("application/pdf");
+		String headerKey = "Content-Disposition";
+		String headerValue = "attachment; filename=dependientes_filtrados.pdf";
+		response.setHeader(headerKey, headerValue);
+
+		// Crear el documento PDF usando iText 7
+		PdfWriter pdfWriter = new PdfWriter(response.getOutputStream());
+		PdfDocument pdfDoc = new PdfDocument(pdfWriter);
+		Document document = new Document(pdfDoc);
+
+		// Agregar márgenes al documento (izquierda, derecha, arriba, abajo)
+		document.setMargins(20, 20, 20, 20);
+
+		// Agregar un título en negrita y centrado al documento
+		Paragraph title = new Paragraph("Reporte de dependiente")
+				.setTextAlignment(TextAlignment.CENTER)
+				.setFontSize(18)
+				.setBold();
+		document.add(title);
+
+		// Agregar un subtítulo
+		Paragraph subTitle = new Paragraph("Dependientes filtrados por país")
+				.setTextAlignment(TextAlignment.CENTER)
+				.setFontSize(12)
+				.setItalic();
+		document.add(subTitle);
+
+		// Espacio después del título
+		document.add(new Paragraph("\n"));
+
+		// Crear una tabla con columnas ajustadas dinámicamente
+		Table table = new Table(UnitValue.createPercentArray(new float[] { 1, 1, 1, 2 }));
+		table.setWidth(UnitValue.createPercentValue(100)); // Ajustar al 100% del ancho de la página
+
+		// Agregar encabezado de tabla con estilo
+		String[] headers = { "ID", "DNI", "Tipo de relación familiar", "Victima" };
+
+		for (String header : headers) {
+			table.addHeaderCell(new Cell().add(new Paragraph(header).setBold())
+					.setTextAlignment(TextAlignment.CENTER)
+					.setBackgroundColor(ColorConstants.LIGHT_GRAY));
+		}
+
+		// Obtener la lista de imputados filtrados por país
+		Integer codigoPaisUsuario = this.usuario.getCodigoPais();
+
+		// Obtener la lista de dependientes filtrados por país de la víctima
+		List<DependienteVictima> todasRelaciones = dependienteVictimaService.getAllDependienteVictima();
+		List<DependienteVictima> relacionesFiltradas = todasRelaciones.stream()
+				.filter(dv -> dv.getVictima().getCICodigoPais() == codigoPaisUsuario)
+				.collect(Collectors.toList());
+
+		List<Dependiente> dependientesFiltrados = relacionesFiltradas.stream()
+				.map(DependienteVictima::getDependiente)
+				.distinct() // Para evitar duplicados en caso de múltiples víctimas
+				.collect(Collectors.toList());
+
+		Map<Integer, Victima> dependienteVictimaMap = relacionesFiltradas.stream()
+				.collect(Collectors.toMap(dv -> dv.getDependiente().getCI_Codigo(), DependienteVictima::getVictima));
+
+		// Recorrer los imputados y agregarlos a la tabla
+		for (Dependiente dependiente : dependientesFiltrados) {
+
+			table.addCell(new Cell().add(new Paragraph(String.valueOf(dependiente.getCI_Codigo())))
+					.setTextAlignment(TextAlignment.CENTER));
+
+			table.addCell(new Cell().add(new Paragraph(dependiente.getCVDNI()))
+					.setTextAlignment(TextAlignment.CENTER));
+
+			table.addCell(new Cell().add(new Paragraph(dependiente.getTipoRelacionFamiliar().getNombre()))
+					.setTextAlignment(TextAlignment.CENTER));
+
+			Victima victima = dependienteVictimaMap.get(dependiente.getCI_Codigo());
+				if (victima != null) {
+					table.addCell(new Cell().add(new Paragraph(victima.getCVNombre()))
+					.setTextAlignment(TextAlignment.CENTER));
+				} else {
+					table.addCell(new Cell().add(new Paragraph("Sin víctima"))
+					.setTextAlignment(TextAlignment.CENTER));
+				}
+
+		}
+
+		// Asegurar que la tabla ocupe el espacio disponible sin distorsionarse
+		table.setAutoLayout();
+
+		// Agregar la tabla al documento
+		document.add(table);
+
+		// Cerrar el documento
+		document.close();
+	}
+
 	@GetMapping("/dependiente/excel")
 	public void exportToExcel(HttpServletResponse response) throws IOException, java.io.IOException {
 
@@ -142,7 +246,6 @@ public class DependienteController {
 			cell.setCellStyle(headerStyle); // Aplicar estilo de encabezado
 		}
 
-
 		Integer codigoPaisUsuario = this.usuario.getCodigoPais();
 
 		// Obtener la lista de dependientes filtrados por país de la víctima
@@ -150,15 +253,14 @@ public class DependienteController {
 		List<DependienteVictima> relacionesFiltradas = todasRelaciones.stream()
 				.filter(dv -> dv.getVictima().getCICodigoPais() == codigoPaisUsuario)
 				.collect(Collectors.toList());
-	
+
 		List<Dependiente> dependientesFiltrados = relacionesFiltradas.stream()
 				.map(DependienteVictima::getDependiente)
 				.distinct() // Para evitar duplicados en caso de múltiples víctimas
 				.collect(Collectors.toList());
-	
+
 		Map<Integer, Victima> dependienteVictimaMap = relacionesFiltradas.stream()
 				.collect(Collectors.toMap(dv -> dv.getDependiente().getCI_Codigo(), DependienteVictima::getVictima));
-	
 
 		// Rellenar las filas con los datos
 		int rowNum = 1;
@@ -169,7 +271,7 @@ public class DependienteController {
 			row.createCell(0).setCellValue(dependiente.getCI_Codigo());
 			row.getCell(0).setCellStyle(cellStyle); // Aplicar estilo de celda
 
-			// DNI 
+			// DNI
 			row.createCell(1).setCellValue(dependiente.getCVDNI());
 			row.getCell(1).setCellStyle(cellStyle);
 

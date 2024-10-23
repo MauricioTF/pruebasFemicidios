@@ -3,11 +3,13 @@ package com.if7100.controller;
 import org.springframework.stereotype.Controller;
 
 import com.if7100.entity.Bitacora;
+import com.if7100.entity.Hecho;
 import com.if7100.entity.Usuario;
 import com.if7100.entity.Paises;
 import com.if7100.service.BitacoraService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Controller
@@ -93,19 +96,33 @@ public class OrganizacionController {
 		
 		this.validarPerfil();
 
-		int numeroTotalElementos = organizacionService.getAllOrganizacion().size();
+		Integer codigoPaisUsuario = this.usuario.getCodigoPais();
+
+		List<Organizacion> organizacionfiltradas = organizacionService.findByCodigoPais(codigoPaisUsuario);
+
+
+		int numeroTotalElementos = organizacionfiltradas.size();
 		Pageable pageable = initPages(pg, 5, numeroTotalElementos);
 
-		Page<Organizacion> organizacionPage = organizacionService.getAllOrganizacionPage(pageable);
+		 // Buscar el país por el código del país almacenado en Hecho
+		 Paises pais = paisesService.getPaisByID(codigoPaisUsuario);
 
-		List<Integer> nPaginas = IntStream.rangeClosed(1, organizacionPage.getTotalPages())
-				.boxed()
-				.toList();
+		 int tamanoPagina = pageable.getPageSize();
+        int numeroPagina = pageable.getPageNumber();
+
+        List<Organizacion> OrganizacionPaginados = organizacionfiltradas.stream()
+                .skip((long) numeroPagina * tamanoPagina)
+                .limit(tamanoPagina)
+                .collect(Collectors.toList());
+
+        List<Integer> nPaginas = IntStream.rangeClosed(1, (int) Math.ceil((double) numeroTotalElementos / tamanoPagina))
+                .boxed()
+                .toList();
 
 		model.addAttribute("PaginaActual", pg);
 		model.addAttribute("nPaginas", nPaginas);
-		model.addAttribute("organizacion", organizacionPage.getContent());
-		model.addAttribute("paises", organizacionService.getAllPaisesPage(pageable));
+		model.addAttribute("organizacion", OrganizacionPaginados);
+        model.addAttribute("nombrePais", pais.getSpanish());
 
 		return "organizacion/organizacion";
 	}
@@ -176,7 +193,7 @@ public class OrganizacionController {
 				existingOrganizacion.setCVDireccion(organizacion.getCVDireccion());
 				existingOrganizacion.setCVTelefono(organizacion.getCVTelefono());
 				existingOrganizacion.setCVCorreo(organizacion.getCVCorreo());
-				existingOrganizacion.setCICodigoPais(organizacion.getCICodigoPais());//actualiza codigo pais
+				existingOrganizacion.setCodigoPais(organizacion.getCodigoPais());//actualiza codigo pais
 
 		organizacionService.updateOrganizacion(existingOrganizacion);
 
@@ -188,23 +205,34 @@ public class OrganizacionController {
 	}
 	
 	@GetMapping("/organizacion/eliminar/{id}")
-	public String deleteOrganizacion(@PathVariable Integer id) {
+	public String deleteOrganizacion(@PathVariable Integer id, Model model) {
 		try {
 			this.validarPerfil();
 			if (!this.perfil.getCVRol().equals("Consulta")) {
 
-				String descripcion = "Elimino una organizacion";
+				try {
+					String descripcion = "Elimino una organizacion";
 				Bitacora bitacora = new Bitacora(this.usuario.getCI_Id(), this.usuario.getCVNombre(),this.perfil.getCVRol() ,
 						descripcion);
 				bitacoraService.saveBitacora(bitacora);
 
 				organizacionService.deleteOrganizacionById(id);
+
+				} catch (DataIntegrityViolationException e) {
+
+                    String mensaje = "Error, No se puede eliminar una organización si tiene usuarios asociados";
+                    model.addAttribute("error_message", mensaje);
+                    model.addAttribute("error", true);
+                    return listOrganizacion(model, 1);
+				}
 				return "redirect:/organizacion";
+
 			} else {
 				return "SinAcceso";
 			}
 
 		} catch (Exception e) {
+			
 			return "SinAcceso";
 		}
 	}

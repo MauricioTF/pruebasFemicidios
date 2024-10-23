@@ -26,13 +26,19 @@ public class OrganizacionServiceImp implements OrganizacionService {
         this.paisesRepository = paisesRepository;
     }
 
+    
+    @Override
+    public List<Organizacion> findByCodigoPais(Integer codigoPais) {
+        return organizacionRepository.findByCodigoPais(codigoPais);
+    }
+
     @Override
     public List<Paises> getAllPaisesPage(Pageable pageable) {
         Page<Organizacion> organizaciones = organizacionRepository.findAll(pageable);
         List<Paises> paises = new ArrayList<>();
 
         for (Organizacion organizacion : organizaciones) {
-            paises.add(paisesRepository.findById(organizacion.getCICodigoPais()).orElse(new Paises()));
+            paises.add(paisesRepository.findById(organizacion.getCodigoPais()).orElse(new Paises()));
         }
         return paises;
     }

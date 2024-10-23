@@ -28,17 +28,17 @@ public class Organizacion {
 	private String CVCorreo;
 
     @Column(name = "CI_Codigo_Pais", nullable = false)
-	private Integer CICodigoPais;
+	private Integer codigoPais;
 
     public Organizacion() {}
 
-	public Organizacion(String CVNombre,String CVDireccion, String CVTelefono, String CVCorreo, int CICodigoPais) {
+	public Organizacion(String CVNombre,String CVDireccion, String CVTelefono, String CVCorreo, int codigoPais) {
 		super();
 		this.CVNombre=CVNombre;
 		this.CVDireccion=CVDireccion;
         this.CVTelefono=CVTelefono;
         this.CVCorreo=CVCorreo;
-        this.CICodigoPais=CICodigoPais;
+        this.codigoPais=codigoPais;
 	}
 
     public Integer getCI_Codigo_Organizacion() {
@@ -81,11 +81,11 @@ public class Organizacion {
 		this.CVCorreo = CVCorreo;
 	}
 
-     public Integer getCICodigoPais() {
-		return CICodigoPais;
+     public Integer getCodigoPais() {
+		return codigoPais;
 	}
 
-	public void setCICodigoPais(Integer CICodigoPais) {
-		this.CICodigoPais = CICodigoPais;
+	public void setCodigoPais(Integer codigoPais) {
+		this.codigoPais = codigoPais;
 	}
 }

@@ -115,7 +115,7 @@ public class UsuarioController {
 				// Filtrar usuarios según el código de país almacenado en la organización
 				List<Usuario> usuariosFiltrados = usuarioService.getAllUsuarios().stream()
 				.filter(usuario -> usuario.getOrganizacion() != null && 
-								   usuario.getOrganizacion().getCICodigoPais().equals(codigoPaisUsuarioLogueado))
+								   usuario.getOrganizacion().getCodigoPais().equals(codigoPaisUsuarioLogueado))
 				.collect(Collectors.toList());
 
 				// Paginación

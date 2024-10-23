@@ -183,9 +183,8 @@ public class HechoController {
                     .setTextAlignment(TextAlignment.CENTER));
             table.addCell(new Cell().add(new Paragraph(hecho.getCDFecha().toString()))
                     .setTextAlignment(TextAlignment.CENTER));
-            table.addCell(new Cell().add(new Paragraph(hecho.getCVDetalles())
-                    .setTextAlignment(TextAlignment.LEFT)
-                    .setFontSize(7))); // Reducir el tamaño de fuente si es necesario
+            table.addCell(new Cell().add(new Paragraph(hecho.getCVDetalles()))
+                    .setTextAlignment(TextAlignment.LEFT));
         }
 
         // Asegurar que la tabla ocupe el espacio disponible sin distorsionarse
@@ -210,6 +209,9 @@ public class HechoController {
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("Hechos Filtrados");
 
+        this.validarPerfil();
+
+        
         // Crear el estilo para el encabezado (negrita y color de fondo)
         XSSFCellStyle headerStyle = workbook.createCellStyle();
         XSSFFont font = workbook.createFont();
